@@ -11,6 +11,10 @@ This is a long term project (think Perl 6) that aims to implement the aforementi
 
 
 ## Environment Setup
+
+### Requirements
+* PostgreSQL
+
 ### Database Setup
 ```bash
 bundle exec rake db:reset
