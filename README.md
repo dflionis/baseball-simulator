@@ -15,7 +15,12 @@ This is a long term project (think Perl 6) that aims to implement the aforementi
 ### Requirements
 * PostgreSQL
 
-### Database Setup
+### Development Database Setup
 ```bash
 bundle exec rake db:reset
+```
+
+### Test Database Setup
+```bash
+bundle exec rake db:test:prepare
 ```
