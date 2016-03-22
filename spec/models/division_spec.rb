@@ -7,6 +7,8 @@ RSpec.describe Division do
 
   it { should belong_to(:league) }
 
+  it { should have_many(:teams) }
+
   it { should validate_presence_of(:region) }
   it { should validate_presence_of(:league) }
 
