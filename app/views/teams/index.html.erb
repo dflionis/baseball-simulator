@@ -1,0 +1,24 @@
+<html>
+  <body bgcolor="16AC1D">
+    <h1>Coming Soon</h1><br>
+    <table>
+      <tr>
+        <td colspan="2", align="left">
+          <%= image_tag("mlb.gif") %>
+        </td>
+      </tr>
+    <% @teams.each do |team| %>
+      <tr>
+        <td>
+          <b>
+            <%= team.full_name %>
+          </b>
+        </td>
+        <td>
+          <%= image_tag(team.logo, size: "100x100") %>
+        </td>
+      </tr>
+    <% end %>
+    </table>
+  </body>
+<html>
