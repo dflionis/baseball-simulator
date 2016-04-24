@@ -1,4 +1,4 @@
-# Baseball Simulator
+![Alt text](/app/assets/images/baseball_simulator.png?raw=true)
 
 Inspired by the Strat-O-Matic Baseball board game, Culture Brain's NES cult classic Baseball Simulator 1.000 and Baseball Mogul for the PC, Baseball Simulator is an attempt to create a Ruby on Rails app that drives various baseball simulation functionality:
 
