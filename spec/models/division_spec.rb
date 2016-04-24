@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Division do
   let(:american_league) { create(:american_league) }
 
-  subject { Division.new(region: "East", league: american_league) }
+  subject { Division.new(region: :east, league: american_league) }
 
   it { should belong_to(:league) }
 
