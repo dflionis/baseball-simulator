@@ -1,11 +1,12 @@
 development: &default
   adapter: postgresql
   encoding: unicode
-  database: baseballsimulator_<%= Rails.env %>
+  database: baseballsimulator_development
   host: localhost
   pool: 5
   username: baseballsimulator
   password: baseball
 
-test: &test
+test:
   <<: *default
+  database: baseballsimulator_test

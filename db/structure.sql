@@ -28,7 +28,6 @@ SET search_path = public, pg_catalog;
 --
 -- Name: region; Type: TYPE; Schema: public; Owner: -
 --
-
 CREATE TYPE region AS ENUM (
     'East',
     'Central',
