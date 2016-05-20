@@ -7,6 +7,8 @@ RSpec.describe Team do
 
   it { should belong_to(:division) }
 
+  it { should have_many(:players) }
+
   it { should validate_presence_of(:city) }
   it { should validate_presence_of(:name) }
   it { should validate_presence_of(:division) }
