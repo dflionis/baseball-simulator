@@ -1,12 +1,14 @@
 require "rails_helper"
 
-# TODO: This is probably not done yet...
 RSpec.describe Player do
   let(:red_sox) { create(:red_sox) }
 
   subject { well_formed_player }
 
   it { should belong_to(:team) }
+
+  it { should have_many(:player_positions) }
+  it { should have_many(:positions).through(:player_positions) }
 
   it { should validate_presence_of(:team) }
   it { should validate_presence_of(:first_name) }
