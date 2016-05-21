@@ -1,6 +1,9 @@
 class Player < ActiveRecord::Base
   belongs_to :team
 
+  has_many :player_positions
+  has_many :positions, through: :player_positions
+
   before_save :valid_outcomes_json?
 
   validates :team, presence: true

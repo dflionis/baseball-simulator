@@ -37,6 +37,19 @@ CREATE TYPE batting_hand AS ENUM (
 
 
 --
+-- Name: fielding_rating; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE fielding_rating AS ENUM (
+    '1',
+    '2',
+    '3',
+    '4',
+    '5'
+);
+
+
+--
 -- Name: region; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -154,6 +167,40 @@ CREATE SEQUENCE leagues_id_seq
 --
 
 ALTER SEQUENCE leagues_id_seq OWNED BY leagues.id;
+
+
+--
+-- Name: player_positions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE player_positions (
+    id integer NOT NULL,
+    player_id integer NOT NULL,
+    position_id integer NOT NULL,
+    fielding_rating fielding_rating NOT NULL,
+    frequency integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: player_positions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE player_positions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: player_positions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE player_positions_id_seq OWNED BY player_positions.id;
 
 
 --
@@ -300,6 +347,13 @@ ALTER TABLE ONLY leagues ALTER COLUMN id SET DEFAULT nextval('leagues_id_seq'::r
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY player_positions ALTER COLUMN id SET DEFAULT nextval('player_positions_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY players ALTER COLUMN id SET DEFAULT nextval('players_id_seq'::regclass);
 
 
@@ -331,6 +385,14 @@ ALTER TABLE ONLY divisions
 
 ALTER TABLE ONLY leagues
     ADD CONSTRAINT leagues_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: player_positions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY player_positions
+    ADD CONSTRAINT player_positions_pkey PRIMARY KEY (id);
 
 
 --
@@ -372,6 +434,13 @@ CREATE UNIQUE INDEX index_leagues_on_name ON leagues USING btree (name);
 
 
 --
+-- Name: index_player_positions_on_player_id_and_position_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_player_positions_on_player_id_and_position_id ON player_positions USING btree (player_id, position_id);
+
+
+--
 -- Name: index_teams_on_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -404,4 +473,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160417233633');
 INSERT INTO schema_migrations (version) VALUES ('20160425020455');
 
 INSERT INTO schema_migrations (version) VALUES ('20160501202135');
+
+INSERT INTO schema_migrations (version) VALUES ('20160520022013');
 
