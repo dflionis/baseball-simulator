@@ -2,6 +2,7 @@ class Team < ActiveRecord::Base
   belongs_to :division
 
   has_many :players
+  has_many :pitchers
 
   validates :division, presence: true
   validates :city, presence: true

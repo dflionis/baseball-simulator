@@ -37,6 +37,19 @@ CREATE TYPE batting_hand AS ENUM (
 
 
 --
+-- Name: batting_rating; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE batting_rating AS ENUM (
+    '1',
+    '2',
+    '3',
+    '4',
+    '5'
+);
+
+
+--
 -- Name: fielding_rating; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -97,6 +110,16 @@ CREATE TYPE stealing AS ENUM (
     'C',
     'D',
     'E'
+);
+
+
+--
+-- Name: throws; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE throws AS ENUM (
+    'R',
+    'L'
 );
 
 
@@ -167,6 +190,55 @@ CREATE SEQUENCE leagues_id_seq
 --
 
 ALTER SEQUENCE leagues_id_seq OWNED BY leagues.id;
+
+
+--
+-- Name: pitchers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE pitchers (
+    id integer NOT NULL,
+    team_id integer NOT NULL,
+    first_name character varying NOT NULL,
+    last_name character varying NOT NULL,
+    throws throws NOT NULL,
+    vs_lhb json NOT NULL,
+    vs_rhb json NOT NULL,
+    batting_rating batting_rating NOT NULL,
+    wins integer NOT NULL,
+    losses integer NOT NULL,
+    era numeric(3,2) NOT NULL,
+    starts integer NOT NULL,
+    saves integer NOT NULL,
+    innings_pitched integer NOT NULL,
+    hits_allowed integer NOT NULL,
+    bb integer NOT NULL,
+    so integer NOT NULL,
+    hr_allowed integer NOT NULL,
+    image_small character varying,
+    image_large character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: pitchers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE pitchers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pitchers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE pitchers_id_seq OWNED BY pitchers.id;
 
 
 --
@@ -347,6 +419,13 @@ ALTER TABLE ONLY leagues ALTER COLUMN id SET DEFAULT nextval('leagues_id_seq'::r
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY pitchers ALTER COLUMN id SET DEFAULT nextval('pitchers_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY player_positions ALTER COLUMN id SET DEFAULT nextval('player_positions_id_seq'::regclass);
 
 
@@ -385,6 +464,14 @@ ALTER TABLE ONLY divisions
 
 ALTER TABLE ONLY leagues
     ADD CONSTRAINT leagues_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pitchers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY pitchers
+    ADD CONSTRAINT pitchers_pkey PRIMARY KEY (id);
 
 
 --
@@ -475,4 +562,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160425020455');
 INSERT INTO schema_migrations (version) VALUES ('20160501202135');
 
 INSERT INTO schema_migrations (version) VALUES ('20160520022013');
+
+INSERT INTO schema_migrations (version) VALUES ('20160521220817');
 
