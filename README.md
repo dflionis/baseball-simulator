@@ -1,5 +1,7 @@
 ![Alt text](/app/assets/images/baseball_simulator.png?raw=true)
 
+[![Build Status](https://travis-ci.org/dflionis/baseball-simulator.svg?branch=master)](https://travis-ci.org/dflionis/baseball-simulator)
+
 Inspired by the Strat-O-Matic Baseball board game, Culture Brain's NES cult classic Baseball Simulator 1.000 and Baseball Mogul for the PC, Baseball Simulator is an attempt to create a Ruby on Rails app that drives various baseball simulation functionality:
 
 * Full Season Simulation
