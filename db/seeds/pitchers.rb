@@ -4,6 +4,7 @@ Pitcher.create(
   team: team,
   first_name: "Rick",
   last_name: "Porcello",
+  pitcher_type: "SP",
   throws: "R",
   batting_rating: "1",
   wins: 9,

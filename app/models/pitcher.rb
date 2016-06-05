@@ -6,6 +6,7 @@ class Pitcher < ActiveRecord::Base
   validates :team, presence: true
   validates :first_name, presence: true
   validates :last_name, presence: true
+  validates :pitcher_type, presence: true
   validates :throws, presence: true
   validates :vs_lhb, presence: true
   validates :vs_rhb, presence: true
@@ -32,6 +33,13 @@ class Pitcher < ActiveRecord::Base
     "3" => "3",
     "4" => "4",
     "5" => "5"
+  }
+
+  enum pitcher_type: {
+    "SP" => "SP",
+    "RP" => "RP",
+    "SP/RP" => "SP/RP",
+    "RP/SP" => "RP/SP"
   }
 
   private

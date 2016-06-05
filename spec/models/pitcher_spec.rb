@@ -10,6 +10,7 @@ RSpec.describe Pitcher do
   it { should validate_presence_of(:team) }
   it { should validate_presence_of(:first_name) }
   it { should validate_presence_of(:last_name) }
+  it { should validate_presence_of(:pitcher_type) }
   it { should validate_presence_of(:throws) }
   it { should validate_presence_of(:vs_lhb) }
   it { should validate_presence_of(:vs_rhb) }
@@ -77,6 +78,7 @@ RSpec.describe Pitcher do
       team: red_sox,
       first_name: "Rick",
       last_name: "Porcello",
+      pitcher_type: "SP",
       throws: "R",
       batting_rating: "1",
       wins: 9,
