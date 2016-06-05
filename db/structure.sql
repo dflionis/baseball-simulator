@@ -63,6 +63,18 @@ CREATE TYPE fielding_rating AS ENUM (
 
 
 --
+-- Name: pitcher_type; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE pitcher_type AS ENUM (
+    'SP',
+    'RP',
+    'SP/RP',
+    'RP/SP'
+);
+
+
+--
 -- Name: region; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -218,7 +230,8 @@ CREATE TABLE pitchers (
     image_small character varying,
     image_large character varying,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    pitcher_type pitcher_type NOT NULL
 );
 
 
@@ -564,4 +577,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160501202135');
 INSERT INTO schema_migrations (version) VALUES ('20160520022013');
 
 INSERT INTO schema_migrations (version) VALUES ('20160521220817');
+
+INSERT INTO schema_migrations (version) VALUES ('20160605223824');
 
