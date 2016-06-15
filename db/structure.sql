@@ -172,6 +172,41 @@ ALTER SEQUENCE divisions_id_seq OWNED BY divisions.id;
 
 
 --
+-- Name: games; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE games (
+    id integer NOT NULL,
+    away_team_id integer NOT NULL,
+    home_team_id integer NOT NULL,
+    start_time timestamp without time zone NOT NULL,
+    game_status integer NOT NULL,
+    away_score integer,
+    home_score integer,
+    current_inning integer
+);
+
+
+--
+-- Name: games_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE games_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: games_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE games_id_seq OWNED BY games.id;
+
+
+--
 -- Name: leagues; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -425,6 +460,13 @@ ALTER TABLE ONLY divisions ALTER COLUMN id SET DEFAULT nextval('divisions_id_seq
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY games ALTER COLUMN id SET DEFAULT nextval('games_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY leagues ALTER COLUMN id SET DEFAULT nextval('leagues_id_seq'::regclass);
 
 
@@ -469,6 +511,14 @@ ALTER TABLE ONLY teams ALTER COLUMN id SET DEFAULT nextval('teams_id_seq'::regcl
 
 ALTER TABLE ONLY divisions
     ADD CONSTRAINT divisions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: games_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY games
+    ADD CONSTRAINT games_pkey PRIMARY KEY (id);
 
 
 --
@@ -579,4 +629,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160520022013');
 INSERT INTO schema_migrations (version) VALUES ('20160521220817');
 
 INSERT INTO schema_migrations (version) VALUES ('20160605223824');
+
+INSERT INTO schema_migrations (version) VALUES ('20160606021734');
 

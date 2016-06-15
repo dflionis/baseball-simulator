@@ -4,4 +4,10 @@ FactoryGirl.define do
     name "Red Sox"
     association :division, factory: :al_east
   end
+
+  factory :mets, class: Team do
+    city "New York"
+    name "Mets"
+    association :division, factory: :nl_east
+  end
 end
