@@ -16,6 +16,8 @@ RSpec.describe Game do
   it { should belong_to(:away_team) }
   it { should belong_to(:home_team) }
 
+  it { should have_many(:innings) }
+
   it { should define_enum_for(:game_status).with([:scheduled, :in_progress, :final]) }
 
   it { should validate_presence_of(:away_team) }

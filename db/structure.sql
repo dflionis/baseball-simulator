@@ -207,6 +207,41 @@ ALTER SEQUENCE games_id_seq OWNED BY games.id;
 
 
 --
+-- Name: innings; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE innings (
+    id integer NOT NULL,
+    game_id integer NOT NULL,
+    number integer NOT NULL,
+    half integer NOT NULL,
+    status integer NOT NULL,
+    runs integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: innings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE innings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: innings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE innings_id_seq OWNED BY innings.id;
+
+
+--
 -- Name: leagues; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -467,6 +502,13 @@ ALTER TABLE ONLY games ALTER COLUMN id SET DEFAULT nextval('games_id_seq'::regcl
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY innings ALTER COLUMN id SET DEFAULT nextval('innings_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY leagues ALTER COLUMN id SET DEFAULT nextval('leagues_id_seq'::regclass);
 
 
@@ -519,6 +561,14 @@ ALTER TABLE ONLY divisions
 
 ALTER TABLE ONLY games
     ADD CONSTRAINT games_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: innings_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY innings
+    ADD CONSTRAINT innings_pkey PRIMARY KEY (id);
 
 
 --
@@ -577,6 +627,13 @@ CREATE UNIQUE INDEX index_divisions_on_id_and_region ON divisions USING btree (i
 
 
 --
+-- Name: index_innings_on_game_id_and_number_and_half; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_innings_on_game_id_and_number_and_half ON innings USING btree (game_id, number, half);
+
+
+--
 -- Name: index_leagues_on_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -631,4 +688,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160521220817');
 INSERT INTO schema_migrations (version) VALUES ('20160605223824');
 
 INSERT INTO schema_migrations (version) VALUES ('20160606021734');
+
+INSERT INTO schema_migrations (version) VALUES ('20160617022244');
 
