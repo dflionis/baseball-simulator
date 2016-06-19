@@ -60,6 +60,22 @@ RSpec.describe Player do
         expect { subject.save! }.to raise_error(ActiveRecord::RecordNotSaved) 
       end
     end
+
+    context "missing number in a range" do
+      subject { player_with_an_overlapping_range_vs_lhp }
+
+      it "rejects a player card with a missing number in a range" do
+        expect { subject.save! }.to raise_error(ActiveRecord::RecordNotSaved) 
+      end
+    end
+
+    context "overlapping numbers in a range" do
+      subject { player_with_an_overlapping_range_vs_lhp }
+
+      it "rejects a player card with an overlapping range" do
+        expect { subject.save! }.to raise_error(ActiveRecord::RecordNotSaved) 
+      end
+    end
   end
 
   describe "vs_rhp" do
@@ -75,6 +91,22 @@ RSpec.describe Player do
       subject { player_missing_red_dice_vs_rhp }
 
       it "rejects a player card with a missing vs_rhp red dice value" do
+        expect { subject.save! }.to raise_error(ActiveRecord::RecordNotSaved) 
+      end
+    end
+
+    context "missing number in a range" do
+      subject { player_with_an_overlapping_range_vs_rhp }
+
+      it "rejects a player card with a missing number in a range" do
+        expect { subject.save! }.to raise_error(ActiveRecord::RecordNotSaved) 
+      end
+    end
+
+    context "overlapping numbers in a range" do
+      subject { player_with_an_overlapping_range_vs_rhp }
+
+      it "rejects a player card with an overlapping range" do
         expect { subject.save! }.to raise_error(ActiveRecord::RecordNotSaved) 
       end
     end
@@ -415,6 +447,254 @@ RSpec.describe Player do
           "10" => "lineout (3b)",
           "11" => "foulout (3b)",
           "12" => "WALK"
+        }
+      }
+    end
+  end
+
+  def player_with_an_overlapping_range_vs_lhp
+    well_formed_player.tap do |player|
+      player.vs_lhp = {
+        "1" => {
+          "2" => "lineout(1b)",
+          "3" => "foulout(3b)",
+          "4" => "lineout(3b)",
+          "5" => "SINGLE**",
+          "6" => "SINGLE(rf)",
+          "7" => {
+            # Overlapping Range!
+            "1-12" => "SI*",
+            "12-20" => "lo(3b)"
+          },
+          "8" => "SINGLE**",
+          "9" => "gb (2b) C",
+          "10" => "popout (2b)",
+          "11" => "popout (2b)",
+          "12" => "lineout (1b)",
+          },
+        "2" => {
+          "2" => "lineout (1b)",
+          "3" => "SINGLE (lf)",
+          "4" => {
+            "1-15" => "HR",
+            "16-20" => "TR"
+          },
+          "5" => {
+            "1-7" => "DO**",
+            "8-20" => "SI**"
+          },
+          "6" => {
+            "1-5" => "DO**",
+            "6-20" => "SI**"
+          },
+          "7" => "gb (ss) B+",
+          "8" => "WALK",
+          "9" => "popout (ss)",
+          "10" => "fly (rf) B?",
+          "11" => {
+            "1-12" => "HR",
+            "13-20" => "fly (lf) B"
+          },
+          "12" => "fly (lf) B?"
+        },
+        "3" => {
+          "2" => "lo (3b) max",
+          "3" => "gb (1b) C",
+          "4" => "SINGLE (cf)",
+          "5" => "popout (ss)",
+          "6" => "fly (lf) B?",
+          "7" => "popout (ss)",
+          "8" => "fly (cf) B?",
+          "9" => "lineout (3b)",
+          "10" => "popout (ss)",
+          "11" => "foulout (c)",
+          "12" => "HBP plus injury"
+        }
+      }
+    end
+  end
+
+  def player_with_an_overlapping_range_vs_lhp
+    well_formed_player.tap do |player|
+      player.vs_lhp = {
+        "1" => {
+          "2" => "lineout(1b)",
+          "3" => "foulout(3b)",
+          "4" => "lineout(3b)",
+          "5" => "SINGLE**",
+          "6" => "SINGLE(rf)",
+          "7" => {
+            # Missing a number in range!
+            "1-10" => "SI*",
+            "12-20" => "lo(3b)"
+          },
+          "8" => "SINGLE**",
+          "9" => "gb (2b) C",
+          "10" => "popout (2b)",
+          "11" => "popout (2b)",
+          "12" => "lineout (1b)",
+          },
+        "2" => {
+          "2" => "lineout (1b)",
+          "3" => "SINGLE (lf)",
+          "4" => {
+            "1-15" => "HR",
+            "16-20" => "TR"
+          },
+          "5" => {
+            "1-7" => "DO**",
+            "8-20" => "SI**"
+          },
+          "6" => {
+            "1-5" => "DO**",
+            "6-20" => "SI**"
+          },
+          "7" => "gb (ss) B+",
+          "8" => "WALK",
+          "9" => "popout (ss)",
+          "10" => "fly (rf) B?",
+          "11" => {
+            "1-12" => "HR",
+            "13-20" => "fly (lf) B"
+          },
+          "12" => "fly (lf) B?"
+        },
+        "3" => {
+          "2" => "lo (3b) max",
+          "3" => "gb (1b) C",
+          "4" => "SINGLE (cf)",
+          "5" => "popout (ss)",
+          "6" => "fly (lf) B?",
+          "7" => "popout (ss)",
+          "8" => "fly (cf) B?",
+          "9" => "lineout (3b)",
+          "10" => "popout (ss)",
+          "11" => "foulout (c)",
+          "12" => "HBP plus injury"
+        }
+      }
+    end
+  end
+
+  def player_with_an_overlapping_range_vs_rhp
+    well_formed_player.tap do |player|
+      player.vs_rhp = {
+        "1" => {
+          "2" => "lineout(1b)",
+          "3" => "foulout(3b)",
+          "4" => "lineout(3b)",
+          "5" => "SINGLE**",
+          "6" => "SINGLE(rf)",
+          "7" => {
+            # Overlapping Range!
+            "1-12" => "SI*",
+            "12-20" => "lo(3b)"
+          },
+          "8" => "SINGLE**",
+          "9" => "gb (2b) C",
+          "10" => "popout (2b)",
+          "11" => "popout (2b)",
+          "12" => "lineout (1b)",
+          },
+        "2" => {
+          "2" => "lineout (1b)",
+          "3" => "SINGLE (lf)",
+          "4" => {
+            "1-15" => "HR",
+            "16-20" => "TR"
+          },
+          "5" => {
+            "1-7" => "DO**",
+            "8-20" => "SI**"
+          },
+          "6" => {
+            "1-5" => "DO**",
+            "6-20" => "SI**"
+          },
+          "7" => "gb (ss) B+",
+          "8" => "WALK",
+          "9" => "popout (ss)",
+          "10" => "fly (rf) B?",
+          "11" => {
+            "1-12" => "HR",
+            "13-20" => "fly (lf) B"
+          },
+          "12" => "fly (lf) B?"
+        },
+        "3" => {
+          "2" => "lo (3b) max",
+          "3" => "gb (1b) C",
+          "4" => "SINGLE (cf)",
+          "5" => "popout (ss)",
+          "6" => "fly (lf) B?",
+          "7" => "popout (ss)",
+          "8" => "fly (cf) B?",
+          "9" => "lineout (3b)",
+          "10" => "popout (ss)",
+          "11" => "foulout (c)",
+          "12" => "HBP plus injury"
+        }
+      }
+    end
+  end
+
+  def player_with_an_overlapping_range_vs_rhp
+    well_formed_player.tap do |player|
+      player.vs_rhp = {
+        "1" => {
+          "2" => "lineout(1b)",
+          "3" => "foulout(3b)",
+          "4" => "lineout(3b)",
+          "5" => "SINGLE**",
+          "6" => "SINGLE(rf)",
+          "7" => {
+            # Missing a number in range!
+            "1-10" => "SI*",
+            "12-20" => "lo(3b)"
+          },
+          "8" => "SINGLE**",
+          "9" => "gb (2b) C",
+          "10" => "popout (2b)",
+          "11" => "popout (2b)",
+          "12" => "lineout (1b)",
+          },
+        "2" => {
+          "2" => "lineout (1b)",
+          "3" => "SINGLE (lf)",
+          "4" => {
+            "1-15" => "HR",
+            "16-20" => "TR"
+          },
+          "5" => {
+            "1-7" => "DO**",
+            "8-20" => "SI**"
+          },
+          "6" => {
+            "1-5" => "DO**",
+            "6-20" => "SI**"
+          },
+          "7" => "gb (ss) B+",
+          "8" => "WALK",
+          "9" => "popout (ss)",
+          "10" => "fly (rf) B?",
+          "11" => {
+            "1-12" => "HR",
+            "13-20" => "fly (lf) B"
+          },
+          "12" => "fly (lf) B?"
+        },
+        "3" => {
+          "2" => "lo (3b) max",
+          "3" => "gb (1b) C",
+          "4" => "SINGLE (cf)",
+          "5" => "popout (ss)",
+          "6" => "fly (lf) B?",
+          "7" => "popout (ss)",
+          "8" => "fly (cf) B?",
+          "9" => "lineout (3b)",
+          "10" => "popout (ss)",
+          "11" => "foulout (c)",
+          "12" => "HBP plus injury"
         }
       }
     end

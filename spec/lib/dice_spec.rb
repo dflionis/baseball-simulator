@@ -13,12 +13,10 @@ RSpec.describe Dice do
       100.times { results << Dice.roll }
 
       results.each do |result|
-        white_die = result[0]
-        delimiter = result[1]
-        red_dice = result.match(/-(\d+)$/).captures.first
+        white_die = result.first
+        red_dice = result.last
 
         expect("1".."6").to include(white_die)
-        expect(delimiter).to eq("-")
         expect("1".."12").to include(red_dice)
       end
     end

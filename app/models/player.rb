@@ -66,28 +66,23 @@ class Player < ActiveRecord::Base
   private
 
   def valid_outcomes_json?
-    valid_vs_lhp_keys? && valid_vs_rhp_keys?
+    valid_vs_lhp_keys? && valid_vs_rhp_keys? &&
+      valid_vs_lhp_ranges? && valid_vs_rhp_ranges?
   end
 
   def valid_vs_lhp_keys?
-    if vs_lhp.keys == %w(1 2 3) &&
-      vs_lhp["1"].keys == ("2".."12").to_a &&
-      vs_lhp["2"].keys == ("2".."12").to_a &&
-      vs_lhp["3"].keys == ("2".."12").to_a
-        true
-    else
-      false
-    end
+    OutcomesDigging.validate_red_and_white_dice_values(vs_lhp, self.class)
   end
 
   def valid_vs_rhp_keys?
-    if vs_rhp.keys == %w(1 2 3) &&
-      vs_rhp["1"].keys == ("2".."12").to_a &&
-      vs_rhp["2"].keys == ("2".."12").to_a &&
-      vs_rhp["3"].keys == ("2".."12").to_a
-        true
-    else
-      false
-    end
+    OutcomesDigging.validate_red_and_white_dice_values(vs_rhp, self.class)
+  end
+
+  def valid_vs_lhp_ranges?
+    OutcomesDigging::validate_20_sided_die_ranges(vs_lhp)
+  end
+
+  def valid_vs_rhp_ranges?
+    OutcomesDigging::validate_20_sided_die_ranges(vs_rhp)
   end
 end
