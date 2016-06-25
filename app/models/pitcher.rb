@@ -45,28 +45,23 @@ class Pitcher < ActiveRecord::Base
   private
 
   def valid_outcomes_json?
-    valid_vs_lhb_keys? && valid_vs_rhb_keys?
+    valid_vs_lhb_keys? && valid_vs_rhb_keys? &&
+      valid_vs_lhb_ranges? && valid_vs_rhb_ranges?
   end
 
   def valid_vs_lhb_keys?
-    if vs_lhb.keys == %w(4 5 6) &&
-      vs_lhb["4"].keys == ("2".."12").to_a &&
-      vs_lhb["5"].keys == ("2".."12").to_a &&
-      vs_lhb["6"].keys == ("2".."12").to_a
-        true
-    else
-      false
-    end
+    OutcomesDigging.validate_red_and_white_dice_values(vs_lhb, self.class)
   end
 
   def valid_vs_rhb_keys?
-    if vs_rhb.keys == %w(4 5 6) &&
-      vs_rhb["4"].keys == ("2".."12").to_a &&
-      vs_rhb["5"].keys == ("2".."12").to_a &&
-      vs_rhb["6"].keys == ("2".."12").to_a
-        true
-    else
-      false
-    end
+    OutcomesDigging.validate_red_and_white_dice_values(vs_rhb, self.class)
+  end
+
+  def valid_vs_lhb_ranges?
+    OutcomesDigging::validate_20_sided_die_ranges(vs_lhb)
+  end
+
+  def valid_vs_rhb_ranges?
+    OutcomesDigging::validate_20_sided_die_ranges(vs_rhb)
   end
 end
