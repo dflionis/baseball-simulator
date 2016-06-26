@@ -86,11 +86,11 @@ namespace :batting_practice do
   def determine_outcomes(pitcher, batter) # should have a different name per ruby conventions
     if pitcher.throws == "R" && batter.batting_hand == "R"
       batter.vs_rhp.merge(pitcher.vs_rhb)   
-    elsif pitcher.throws == "R" && (batter.batting_hand == "L" || batter.batting_hand == "B")
+    elsif pitcher.throws == "R" && (batter.batting_hand == "L" || batter.batting_hand == "S")
       batter.vs_rhp.merge(pitcher.vs_lhb)   
     elsif pitcher.throws == "L" && batter.batting_hand == "L"
       batter.vs_lhp.merge(pitcher.vs_lhb)   
-    elsif pitcher.throws == "L" && (batter.batting_hand == "R" || batter.batting_hand == "B")
+    elsif pitcher.throws == "L" && (batter.batting_hand == "R" || batter.batting_hand == "S")
       batter.vs_lhp.merge(pitcher.vs_rhb)
     else
       raise "unreachable condition"
