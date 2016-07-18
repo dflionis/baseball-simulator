@@ -2,7 +2,7 @@ leagues = []
 
 puts "Creating Leagues..."
 { "American League" => true, "National League" => false }.each do |name, dh|
-  leagues << League.create(name: name, dh: dh)
+  leagues << League.create!(name: name, dh: dh)
 end
 
 regions = %w(East Central West)
@@ -10,7 +10,7 @@ regions = %w(East Central West)
 puts "Creating Divisions..."
 leagues.each do |league|
   regions.each do |region|
-    Division.create(
+    Division.create!(
       league: league,
       region: region
     )
