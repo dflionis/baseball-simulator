@@ -239,7 +239,7 @@ Player.create!(
       "4" => "fly (lf) B?",
       "5" => "strikeout",
       "6" => "WALK",
-      "7" => "gb (2b A+)",
+      "7" => "gb (2b) A+",
       "8" => {
         "1-4" => "HR",
         "5-20" => "fly (lf) B"
@@ -600,7 +600,7 @@ Player.create!(
     "1" => {
       "2" => "gb (2b) C",
       "3" => "gb (1b) C",
-      "4" => "gb (p B",
+      "4" => "gb (p) B",
       "5" => "strikeout",
       "6" => "strikeout",
       "7" => "strikeout",

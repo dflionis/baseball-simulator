@@ -9,11 +9,14 @@ RSpec.describe Inning do
       half: Inning.halves["top"],
       status: Inning.statuses["completed"],
       number: 1,
-      runs: 0
+      runs: 0,
+      outs: 3
     )
   end
 
   it { should belong_to(:game) }
+
+  it { should have_many(:plate_appearances) }
 
   it { should define_enum_for(:half).with(%i(top bottom)) }
   it { should define_enum_for(:status).with(%i(in_progress completed)) }
@@ -22,6 +25,8 @@ RSpec.describe Inning do
   it { should validate_presence_of(:number) }
   it { should validate_presence_of(:half) }
   it { should validate_presence_of(:status) }
+
+  it { should validate_inclusion_of(:outs).in_range(0..3) }
 
   it { should validate_numericality_of(:number).is_greater_than_or_equal_to(1) }
   it { should validate_numericality_of(:runs).is_greater_than_or_equal_to(0) }
@@ -133,6 +138,97 @@ RSpec.describe Inning do
         top_of_1st.save!
         expect { top_of_2nd.save! }.to raise_error("incorrect inning sequence")
       end
+    end
+  end
+
+  describe "#add_one_out" do
+    context "when there are less than 3 outs" do
+      subject do
+        Inning.create!(
+          game: game,
+          half: Inning.halves["top"],
+          status: Inning.statuses["in_progress"],
+          number: 1,
+          runs: 0,
+          outs: 0
+        )
+      end
+
+      it "increases the out count by one" do
+        subject.add_one_out
+        expect(subject.outs).to eq(1)
+      end
+    end
+
+    context "when there are 3 outs" do
+      it "raises an error indicating there are already 3 outs" do
+        expect { subject.add_one_out }.to raise_error("There are already 3 outs")
+      end
+    end
+  end
+
+  describe "#add_two_outs" do
+    context "when there are less than 2 outs" do
+      subject do
+        Inning.create!(
+          game: game,
+          half: Inning.halves["top"],
+          status: Inning.statuses["in_progress"],
+          number: 1,
+          runs: 0,
+          outs: 0
+        )
+      end
+
+      it "increases the out count by two" do
+        subject.add_two_outs
+        expect(subject.outs).to eq(2)
+      end
+    end
+
+    context "when there are 2 outs" do
+      subject do
+        Inning.create!(
+          game: game,
+          half: Inning.halves["top"],
+          status: Inning.statuses["in_progress"],
+          number: 1,
+          runs: 0,
+          outs: 2
+        )
+      end
+
+      it "increases the out count to three" do
+        subject.add_two_outs
+        expect(subject.outs).to eq(3)
+      end
+    end
+
+    context "when there are 3 outs" do
+      it "raises an error indicating there are already 3 outs" do
+        expect { subject.add_two_outs }.to raise_error("There are already 3 outs")
+      end
+    end
+  end
+
+  describe "#set_default_values" do
+    subject { Inning.new }  
+
+    it "sets the appropriate default values" do
+      expect(subject.outs).to eq(0)
+      expect(subject.runs).to eq(0)
+    end
+  end
+
+  describe "#update_game_score" do
+    before do
+      subject.runs = 1      
+      subject.save!
+    end
+
+    it "correctly updates the score" do
+      expect(subject.game.away_score).to eq(1)
+      expect(subject.game.home_score).to eq(0)
     end
   end
 end
