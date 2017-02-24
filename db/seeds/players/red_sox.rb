@@ -22,14 +22,14 @@ Player.create!(
   obp: 0.341,
   vs_lhp: {
     "1" => {
-      "2" => "lineout(1b)",
-      "3" => "foulout(3b)",
-      "4" => "lineout(3b)",
+      "2" => "lineout (1b)",
+      "3" => "foulout (3b)",
+      "4" => "lineout (3b)",
       "5" => "SINGLE**",
-      "6" => "SINGLE(rf)",
+      "6" => "SINGLE (rf)",
       "7" => {
         "1-11" => "SI*",
-        "12-20" => "lo(3b)"
+        "12-20" => "lo (3b)"
       },
       "8" => "SINGLE**",
       "9" => "gb (2b) C",
@@ -112,7 +112,7 @@ Player.create!(
       "8" => "WALK",
       "9" => "gb (2b) C",
       "10" => "WALK",
-      "11" => "SINGLE(lf)",
+      "11" => "SINGLE (lf)",
       "12" => {
         "1-16" => "HR",
         "17-20" => "fly (lf) B"
@@ -197,8 +197,8 @@ Player.create!(
       "3" => "gb (ss) A",
       "4" => "gb (ss) A",
       "5" => "SINGLE (lf)",
-      "6" => "SINGLE **",
-      "7" => "SINGLE **",
+      "6" => "SINGLE**",
+      "7" => "SINGLE**",
       "8" => {
         "1-13" => "SI*",
         "14-20" => "gb (3b) B"
@@ -359,7 +359,7 @@ Player.create!(
       "8" => "WALK",
       "9" => "strikeout",
       "10" => "WALK",
-      "11" => "single (cf)",
+      "11" => "SINGLE (cf)",
       "12" => "gb (1b) C"
     },
     "2" => {
@@ -604,7 +604,7 @@ Player.create!(
       "5" => "strikeout",
       "6" => "gb (1b) B",
       "7" => "strikeout",
-      "8" => "striekout",
+      "8" => "strikeout",
       "9" => "fly (lf) B?",
       "10" => "gb (ss) A",
       "11" => "gb (3b) A",
@@ -691,8 +691,8 @@ Player.create!(
       "3" => "gb (p) B",
       "4" => "gb (p) B",
       "5" => "gb (2b) A",
-      "6" => "SINGLE",
-      "7" => "SINGLE",
+      "6" => "SINGLE**",
+      "7" => "SINGLE**",
       "8" => "fly (cf) B?",
       "9" => "gb (ss) A",
       "10" => "gb (2b) C",
@@ -703,7 +703,7 @@ Player.create!(
       "2" => "lo (3b) max",
       "3" => "gb (3b) A",
       "4" => "gb (3b) A",
-      "5" => "fly (lf B?",
+      "5" => "fly (lf) B?",
       "6" => {
         "1-14" => "SI*",
         "15-20" => "gb (1b) B"
@@ -1051,7 +1051,7 @@ Player.create!(
       "3" => "HBP",
       "4" => "gb (2b) A",
       "5" => "fly (lf) B?",
-      "6" => "fly (cf B?",
+      "6" => "fly (cf) B?",
       "7" => "gb (2b) C",
       "8" => "gb (3b) B",
       "9" => "foulout (c)",

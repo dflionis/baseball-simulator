@@ -6,5 +6,5 @@ Game.create!(
   away_team: away_team,
   home_team: home_team,
   start_time: Time.now,
-  game_status: :scheduled
+  status: :scheduled
 )

@@ -8,7 +8,7 @@ RSpec.describe Game do
     Game.new(
       away_team: mets,
       home_team: red_sox,
-      game_status: :scheduled,
+      status: :scheduled,
       start_time: Time.now
     )
   end
@@ -18,7 +18,7 @@ RSpec.describe Game do
 
   it { should have_many(:innings) }
 
-  it { should define_enum_for(:game_status).with([:scheduled, :in_progress, :final]) }
+  it { should define_enum_for(:status).with([:scheduled, :in_progress, :final]) }
 
   it { should validate_presence_of(:away_team) }
   it { should validate_presence_of(:home_team) }
@@ -53,7 +53,7 @@ RSpec.describe Game do
       Game.new(
         away_team: mets,
         home_team: red_sox,
-        game_status: :final,
+        status: :final,
         start_time: Time.now - 1.day,
         away_score: 6,
         home_score: 5
@@ -75,13 +75,230 @@ RSpec.describe Game do
       Game.new(
         away_team: red_sox,
         home_team: red_sox,
-        game_status: :scheduled,
+        status: :scheduled,
         start_time: Time.now
       )
     end
 
     it "prevents the game from being saved" do
       expect { subject.save! }.to raise_error("We currently do not support mirror matches")
+    end
+  end
+
+  context "deleting games" do
+    before { create(:top_of_the_first) }
+
+    it "deletes children innings when a game is deleted" do
+      expect(Inning.count).to eq(1)
+      Game.destroy_all
+      expect(Inning.count).to eq(0)
+    end
+  end
+
+  describe "#print_line_score" do
+    context "Extra Inning Game" do
+      let(:warning) { "We need to implement extra inning flexible line scores!" }
+      let(:line_break) { "\n" }
+
+      before { allow(subject).to receive_message_chain(:innings, :completed, :count).and_return(24) }
+
+      it "warns that it will not print a line score" do
+        expect { subject.print_line_score  }.to output(warning + line_break).to_stdout
+      end
+    end
+
+    context "9 Inning Game" do
+      let(:line1) { "Team  1  2  3  4  5  6  7  8  9  R  H  E"}
+      let(:line2) { "NYM   0  0  0  0  0  0  0  0  0  0  ?  ?"}
+      let(:line3) { "BOS   0  0  0  0  0  0  0  1  X  1  ?  ?"}
+      let(:expected_output) { line1 + "\n" + line2 + "\n" + line3 + "\n" }
+
+      before do
+        subject.save!
+        subject.innings.create(number: 1, half: Inning.halves["top"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 1, half: Inning.halves["bottom"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 2, half: Inning.halves["top"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 2, half: Inning.halves["bottom"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 3, half: Inning.halves["top"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 3, half: Inning.halves["bottom"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 4, half: Inning.halves["top"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 4, half: Inning.halves["bottom"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 5, half: Inning.halves["top"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 5, half: Inning.halves["bottom"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 6, half: Inning.halves["top"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 6, half: Inning.halves["bottom"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 7, half: Inning.halves["top"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 7, half: Inning.halves["bottom"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 8, half: Inning.halves["top"], status: Inning.statuses["completed"], runs: 0 )
+        subject.innings.create(number: 8, half: Inning.halves["bottom"], status: Inning.statuses["completed"], runs: 1 )
+        subject.innings.create(number: 9, half: Inning.halves["top"], status: Inning.statuses["completed"], runs: 0 )
+      end
+
+      it "prints a line score" do
+        expect { subject.print_line_score  }.to output(expected_output).to_stdout
+      end
+    end
+  end
+
+  describe "#going_final?" do
+    context "when the game is already final" do
+      subject do
+        Game.new(
+          away_team: mets,
+          home_team: red_sox,
+          status: :final,
+          start_time: Time.now
+        )
+      end
+
+      it "returns nil" do
+        expect(subject.going_final?).to be_nil
+      end
+    end
+
+    context "if the game is tied" do
+      subject do
+        Game.new(
+          away_team: mets,
+          home_team: red_sox,
+          status: :in_progress,
+          start_time: Time.now,
+          away_score: 4,
+          home_score: 4
+        )
+      end
+
+      it "returns false" do
+        expect(subject.going_final?).to be false
+      end
+    end
+
+    context "if the top of the 9th is not yet completed" do
+      let(:innings) { double(completed: completed) }
+      let(:completed) { double(count: count) }
+      let(:count) { 3 }
+
+      before do
+        allow(subject).to receive(:innings).and_return(innings)
+      end
+
+      subject do
+        Game.new(
+          away_team: mets,
+          home_team: red_sox,
+          status: :in_progress,
+          start_time: Time.now,
+          away_score: 0,
+          home_score: 7
+        )
+      end
+
+      it "returns false" do
+        expect(subject.going_final?).to be false
+      end
+    end
+
+    context "if the top of the 9th is completed and the home team is ahead" do
+      let(:innings) { double(completed: completed) }
+      let(:completed) { double(count: count) }
+      let(:count) { 17 }
+
+      before do
+        allow(subject).to receive(:innings).and_return(innings)
+        allow(subject).to receive(:end_game).and_return(true)
+      end
+
+      subject do
+        Game.new(
+          away_team: mets,
+          home_team: red_sox,
+          status: :in_progress,
+          start_time: Time.now,
+          away_score: 0,
+          home_score: 3
+        )
+      end
+
+      it "ends the game and returns true" do
+        expect(subject.going_final?).to be true
+        expect(subject).to have_received(:end_game)
+      end
+    end
+
+    context "if 9 innings are complete, the road team leads, the home team has gotten equal at bats" do
+      let(:innings) { double(completed: completed, count: 20) }
+      let(:completed) { double(count: count) }
+      let(:count) { 20 }
+
+      before do
+        allow(subject).to receive(:innings).and_return(innings)
+        allow(subject).to receive(:end_game).and_return(true)
+      end
+
+      subject do
+        Game.new(
+          away_team: mets,
+          home_team: red_sox,
+          status: :in_progress,
+          start_time: Time.now,
+          away_score: 7,
+          home_score: 2
+        )
+      end
+
+      it "ends the game and returns true" do
+        expect(subject.going_final?).to be true
+        expect(subject).to have_received(:end_game)
+      end
+    end
+
+    context "if the away team is winning but the home team hasn't come up to bat in the bottom of the inning" do
+      let(:innings) { double(completed: completed, count: 21) }
+      let(:completed) { double(count: count) }
+      let(:count) { 21 }
+
+      before do
+        allow(subject).to receive(:innings).and_return(innings)
+      end
+
+      subject do
+        Game.new(
+          away_team: mets,
+          home_team: red_sox,
+          status: :in_progress,
+          start_time: Time.now,
+          away_score: 5,
+          home_score: 1
+        )
+      end
+
+      it "returns false" do
+        expect(subject.going_final?).to be false
+      end
+    end
+
+    context "if we're in extra innings, the away team leads but hasn't finished their half inning" do
+      let(:innings) { double(completed: completed, count: 21) }
+      let(:completed) { double(count: count) }
+      let(:count) { 20 }
+
+      before do
+        allow(subject).to receive(:innings).and_return(innings)
+      end
+
+      subject do
+        Game.new(
+          away_team: mets,
+          home_team: red_sox,
+          status: :in_progress,
+          start_time: Time.now,
+          away_score: 5,
+          home_score: 1
+        )
+      end
+      it "ends the game and returns true" do
+        expect(subject.going_final?).to be false
+      end
     end
   end
 end

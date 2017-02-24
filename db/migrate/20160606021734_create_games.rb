@@ -5,8 +5,8 @@ class CreateGames < ActiveRecord::Migration
       t.references :home_team, references: :team, null: false
       t.datetime :start_time, null: false
       t.integer :game_status, null: false
-      t.integer :away_score
-      t.integer :home_score
+      t.integer :away_score, default: 0
+      t.integer :home_score, default: 0
       t.integer :current_inning
     end
   end

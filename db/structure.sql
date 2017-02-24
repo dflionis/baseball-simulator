@@ -140,6 +140,40 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: default_lineup_slots; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE default_lineup_slots (
+    id integer NOT NULL,
+    team_id integer NOT NULL,
+    player_id integer NOT NULL,
+    slot integer NOT NULL,
+    position_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: default_lineup_slots_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE default_lineup_slots_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: default_lineup_slots_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE default_lineup_slots_id_seq OWNED BY default_lineup_slots.id;
+
+
+--
 -- Name: divisions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -172,6 +206,41 @@ ALTER SEQUENCE divisions_id_seq OWNED BY divisions.id;
 
 
 --
+-- Name: game_lineup_slots; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE game_lineup_slots (
+    id integer NOT NULL,
+    game_id integer NOT NULL,
+    team integer NOT NULL,
+    player_id integer NOT NULL,
+    slot integer NOT NULL,
+    position_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: game_lineup_slots_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE game_lineup_slots_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: game_lineup_slots_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE game_lineup_slots_id_seq OWNED BY game_lineup_slots.id;
+
+
+--
 -- Name: games; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -180,9 +249,9 @@ CREATE TABLE games (
     away_team_id integer NOT NULL,
     home_team_id integer NOT NULL,
     start_time timestamp without time zone NOT NULL,
-    game_status integer NOT NULL,
-    away_score integer,
-    home_score integer,
+    status integer NOT NULL,
+    away_score integer DEFAULT 0,
+    home_score integer DEFAULT 0,
     current_inning integer
 );
 
@@ -218,7 +287,8 @@ CREATE TABLE innings (
     status integer NOT NULL,
     runs integer,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    outs integer DEFAULT 0
 );
 
 
@@ -275,6 +345,37 @@ ALTER SEQUENCE leagues_id_seq OWNED BY leagues.id;
 
 
 --
+-- Name: outcomes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE outcomes (
+    id integer NOT NULL,
+    code character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: outcomes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE outcomes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: outcomes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE outcomes_id_seq OWNED BY outcomes.id;
+
+
+--
 -- Name: pitchers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -322,6 +423,50 @@ CREATE SEQUENCE pitchers_id_seq
 --
 
 ALTER SEQUENCE pitchers_id_seq OWNED BY pitchers.id;
+
+
+--
+-- Name: plate_appearances; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE plate_appearances (
+    id integer NOT NULL,
+    inning_id integer NOT NULL,
+    batter_id integer NOT NULL,
+    pitcher_id integer NOT NULL,
+    runner_on_first_id integer,
+    runner_on_second_id integer,
+    runner_on_third_id integer,
+    outcome_id integer NOT NULL,
+    ab boolean DEFAULT true,
+    h boolean DEFAULT false,
+    hr boolean DEFAULT false,
+    bb boolean DEFAULT false,
+    so boolean DEFAULT false,
+    double boolean DEFAULT false,
+    triple boolean DEFAULT false,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: plate_appearances_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE plate_appearances_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: plate_appearances_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE plate_appearances_id_seq OWNED BY plate_appearances.id;
 
 
 --
@@ -461,7 +606,8 @@ CREATE TABLE teams (
     name character varying NOT NULL,
     logo character varying,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    abbreviation character varying(3) NOT NULL
 );
 
 
@@ -488,7 +634,21 @@ ALTER SEQUENCE teams_id_seq OWNED BY teams.id;
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY default_lineup_slots ALTER COLUMN id SET DEFAULT nextval('default_lineup_slots_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY divisions ALTER COLUMN id SET DEFAULT nextval('divisions_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY game_lineup_slots ALTER COLUMN id SET DEFAULT nextval('game_lineup_slots_id_seq'::regclass);
 
 
 --
@@ -516,7 +676,21 @@ ALTER TABLE ONLY leagues ALTER COLUMN id SET DEFAULT nextval('leagues_id_seq'::r
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY outcomes ALTER COLUMN id SET DEFAULT nextval('outcomes_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY pitchers ALTER COLUMN id SET DEFAULT nextval('pitchers_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY plate_appearances ALTER COLUMN id SET DEFAULT nextval('plate_appearances_id_seq'::regclass);
 
 
 --
@@ -548,11 +722,27 @@ ALTER TABLE ONLY teams ALTER COLUMN id SET DEFAULT nextval('teams_id_seq'::regcl
 
 
 --
+-- Name: default_lineup_slots_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY default_lineup_slots
+    ADD CONSTRAINT default_lineup_slots_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: divisions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY divisions
     ADD CONSTRAINT divisions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: game_lineup_slots_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY game_lineup_slots
+    ADD CONSTRAINT game_lineup_slots_pkey PRIMARY KEY (id);
 
 
 --
@@ -580,11 +770,27 @@ ALTER TABLE ONLY leagues
 
 
 --
+-- Name: outcomes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY outcomes
+    ADD CONSTRAINT outcomes_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: pitchers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY pitchers
     ADD CONSTRAINT pitchers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: plate_appearances_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY plate_appearances
+    ADD CONSTRAINT plate_appearances_pkey PRIMARY KEY (id);
 
 
 --
@@ -620,10 +826,52 @@ ALTER TABLE ONLY teams
 
 
 --
+-- Name: index_default_lineup_slots_on_team_id_and_player_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_default_lineup_slots_on_team_id_and_player_id ON default_lineup_slots USING btree (team_id, player_id);
+
+
+--
+-- Name: index_default_lineup_slots_on_team_id_and_position_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_default_lineup_slots_on_team_id_and_position_id ON default_lineup_slots USING btree (team_id, position_id);
+
+
+--
+-- Name: index_default_lineup_slots_on_team_id_and_slot; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_default_lineup_slots_on_team_id_and_slot ON default_lineup_slots USING btree (team_id, slot);
+
+
+--
 -- Name: index_divisions_on_id_and_region; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE UNIQUE INDEX index_divisions_on_id_and_region ON divisions USING btree (id, region);
+
+
+--
+-- Name: index_game_lineup_slots_on_game_id_and_team_and_player_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_game_lineup_slots_on_game_id_and_team_and_player_id ON game_lineup_slots USING btree (game_id, team, player_id);
+
+
+--
+-- Name: index_game_lineup_slots_on_game_id_and_team_and_position_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_game_lineup_slots_on_game_id_and_team_and_position_id ON game_lineup_slots USING btree (game_id, team, position_id);
+
+
+--
+-- Name: index_game_lineup_slots_on_game_id_and_team_and_slot; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_game_lineup_slots_on_game_id_and_team_and_slot ON game_lineup_slots USING btree (game_id, team, slot);
 
 
 --
@@ -638,6 +886,13 @@ CREATE UNIQUE INDEX index_innings_on_game_id_and_number_and_half ON innings USIN
 --
 
 CREATE UNIQUE INDEX index_leagues_on_name ON leagues USING btree (name);
+
+
+--
+-- Name: index_outcomes_on_code; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_outcomes_on_code ON outcomes USING btree (code);
 
 
 --
@@ -690,4 +945,18 @@ INSERT INTO schema_migrations (version) VALUES ('20160605223824');
 INSERT INTO schema_migrations (version) VALUES ('20160606021734');
 
 INSERT INTO schema_migrations (version) VALUES ('20160617022244');
+
+INSERT INTO schema_migrations (version) VALUES ('20161114015724');
+
+INSERT INTO schema_migrations (version) VALUES ('20161125210911');
+
+INSERT INTO schema_migrations (version) VALUES ('20161126181033');
+
+INSERT INTO schema_migrations (version) VALUES ('20161202024125');
+
+INSERT INTO schema_migrations (version) VALUES ('20161204153917');
+
+INSERT INTO schema_migrations (version) VALUES ('20170101234806');
+
+INSERT INTO schema_migrations (version) VALUES ('20170103025525');
 

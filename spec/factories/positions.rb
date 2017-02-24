@@ -10,4 +10,10 @@ FactoryGirl.define do
     abbreviation "CF"
     scorebook_id "8"
   end
+
+  factory :designated_hitter, class: Position do
+    name "Designated Hitter"
+    abbreviation "DH"
+    scorebook_id "DH"
+  end
 end
