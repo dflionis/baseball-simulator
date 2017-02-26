@@ -3,11 +3,6 @@ namespace :crude_game do
   task :sox_vs_yanks => :environment do
     game = create_new_exhibition_game
 
-    @lineups = {
-      away_lineup: game.away_team.load_default_lineup(game: game, home: false),
-      home_lineup: game.home_team.load_default_lineup(game: game, home: true)
-    }
-
     while !game.final? do
       @half_inning_object = game.next_half_inning
       @half_inning_object.save!
@@ -24,13 +19,19 @@ namespace :crude_game do
   end
 
   def half_inning(hitting_team:, game:)
-    lineup = hitting_team == "away" ? @lineups[:away_lineup] : @lineups[:home_lineup]
-    pitcher = set_pitcher(hitting_team)
+    if hitting_team == "away"
+      lineup = game.lineups[:away_lineup]
+      pitcher = game.home_pitcher
+    else
+      lineup = game.lineups[:home_lineup]
+      pitcher = game.away_pitcher
+    end
+
     @man_on_first = nil
     @man_on_second = nil
     @man_on_third = nil
     while @half_inning_object.status != "completed"
-      hitter_index = set_hitter_index(hitting_team)
+      hitter_index = hitting_team == "away" ? game.increment_away_hitter_index : game.increment_home_hitter_index
       hitter = lineup[hitter_index]
       plate_appearance = @half_inning_object.plate_appearances.create!(
         pitcher: pitcher,
@@ -234,38 +235,6 @@ namespace :crude_game do
 
       @half_inning_object.save! # Eventually plate appearance should call this
       break if game.going_final? # Not sure why the 'break' is needed but it is for now to prevent extra AB after walk off win. FIXME
-    end
-  end
-
-  def set_hitter_index(hitting_team)
-    if hitting_team == "away"
-      if @hitter
-        if @hitter == 8
-          @hitter = 0
-        else
-          @hitter += 1
-        end
-      else
-        @hitter = 0
-      end
-    else
-      if @home_hitter
-        if @home_hitter == 8
-          @home_hitter = 0
-        else
-          @home_hitter += 1
-        end
-      else
-        @home_hitter = 0
-      end
-    end
-  end
-
-  def set_pitcher(hitting_team)
-    if hitting_team == "away"
-      Pitcher.find_by(last_name: "Porcello")
-    else
-      Pitcher.find_by(last_name: "Sabathia")
     end
   end
 

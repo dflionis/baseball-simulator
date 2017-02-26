@@ -22,6 +22,7 @@ class Game < ActiveRecord::Base
     if: :in_progress?
 
   before_save :sync_current_inning_with_status, :prevent_mirror_matches
+  after_create :load_lineups
 
   def next_half_inning
     completed_half_innings = innings.completed.count
@@ -95,6 +96,42 @@ class Game < ActiveRecord::Base
     end
   end
 
+  def lineups
+    @loaded_lineups
+  end
+
+  def increment_away_hitter_index
+    if @away_hitter
+      if @away_hitter == 8
+        @away_hitter = 0
+      else
+        @away_hitter += 1
+      end
+    else
+      @away_hitter = 0
+    end
+  end
+
+  def increment_home_hitter_index
+    if @home_hitter
+      if @home_hitter == 8
+        @home_hitter = 0
+      else
+        @home_hitter += 1
+      end
+    else
+      @home_hitter = 0
+    end
+  end
+
+  def away_pitcher
+    @away_pitcher ||= Pitcher.find_by(last_name: "Sabathia")
+  end
+
+  def home_pitcher
+    @home_pitcher ||= Pitcher.find_by(last_name: "Porcello")
+  end
+
   private
 
   def sync_current_inning_with_status
@@ -148,5 +185,13 @@ class Game < ActiveRecord::Base
 
   def even_number_of_half_innings_started
     innings.count % 2 == 0
+  end
+
+  def load_lineups
+    @loaded_lineups ||=
+      {
+        away_lineup: away_team.load_default_lineup(game: self, home: false),
+        home_lineup: home_team.load_default_lineup(game: self, home: true)
+      }
   end
 end

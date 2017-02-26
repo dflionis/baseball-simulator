@@ -301,4 +301,52 @@ RSpec.describe Game do
       end
     end
   end
+
+  describe "#away_pitcher" do
+    let!(:sabathia) { FactoryGirl.create(:cc_sabathia, team: FactoryGirl.create(:dodgers)) }
+
+    it "selects Rick Porcello as the home pitcher" do
+      expect(subject.away_pitcher).to eq(sabathia)
+    end
+  end
+
+  describe "#home_pitcher" do
+    let!(:porcello) { FactoryGirl.create(:rick_porcello, team: FactoryGirl.create(:dodgers)) }
+
+    it "selects Rick Porcello as the home pitcher" do
+      expect(subject.home_pitcher).to eq(porcello)
+    end
+  end
+
+  describe "#increment_away_hitter_index" do
+    it "increments the away hitter index properly" do
+      (0..8).to_a.push(0).each do |expected_index|
+        expect(subject.increment_away_hitter_index).to eq(expected_index)
+      end
+    end
+  end
+
+  describe "#increment_home_hitter_index" do
+    it "increments the away hitter index properly" do
+      (0..8).to_a.push(0).each do |expected_index|
+        expect(subject.increment_home_hitter_index).to eq(expected_index)
+      end
+    end
+  end
+
+  describe "#lineups" do
+    let(:away_lineup) { %w(foo bar baz) }
+    let(:home_lineup) { %w(qux quux corge) }
+    let(:expected_lineup_hash) { { away_lineup: away_lineup, home_lineup: home_lineup } }
+
+    before do
+      allow(subject.away_team).to receive(:load_default_lineup).with({ game: subject, home: false }).and_return(away_lineup)
+      allow(subject.home_team).to receive(:load_default_lineup).with({ game: subject, home: true }).and_return(home_lineup)
+    end
+
+    it "returns a hash with both away and home lineups" do
+      subject.save!
+      expect(subject.lineups).to eq(expected_lineup_hash)
+    end
+  end
 end
