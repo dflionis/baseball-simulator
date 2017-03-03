@@ -41,11 +41,8 @@ RSpec.describe Game do
       allow(subject).to receive(:in_progress?).and_return(true)
     end
 
-    it { should validate_presence_of(:current_inning) } 
-
     it { should validate_numericality_of(:away_score).is_greater_than_or_equal_to(0) } 
     it { should validate_numericality_of(:home_score).is_greater_than_or_equal_to(0) }
-    it { should validate_numericality_of(:current_inning).is_greater_than_or_equal_to(1) }
   end
 
   context "game is final" do
@@ -347,6 +344,48 @@ RSpec.describe Game do
     it "returns a hash with both away and home lineups" do
       subject.save!
       expect(subject.lineups).to eq(expected_lineup_hash)
+    end
+  end
+
+  describe "#hitting_team" do
+    context "When the road team is at bat" do
+      before { create(:top_of_the_first, status: :in_progress, game: subject) } 
+
+      it "indicates the road team is at bat" do
+        expect(subject.hitting_team).to eq("away")
+      end
+    end
+
+    context "When the home team is at bat" do
+      before do
+        create(:top_of_the_first, game: subject)
+        Inning.create(number: 1, status: :in_progress, half: :bottom, game: subject) 
+      end
+
+      it "indicates the home team is at bat" do
+        expect(subject.hitting_team).to eq("home")
+      end
+    end
+  end
+
+  describe "#next_half_inning" do
+    context "if an inning is in progress" do
+      let!(:top_of_1st) { create(:top_of_the_first, game: subject, status: :in_progress) }
+
+      it "returns the inning in progress" do
+        expect(subject.next_half_inning).to eq(top_of_1st)
+      end
+    end
+
+    context "if no innings are in progress" do
+      before { create(:top_of_the_first, game: subject, status: :completed) }
+
+      it "returns the next inning" do
+        inning = subject.next_half_inning
+        expect(inning.number).to eq(1)
+        expect(inning.half).to eq("bottom")
+        expect(inning.runs).to eq(0)
+      end
     end
   end
 end
