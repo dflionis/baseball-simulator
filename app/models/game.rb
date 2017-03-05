@@ -18,26 +18,35 @@ class Game < ActiveRecord::Base
     if: :in_progress?
   validates :home_score, numericality: { greater_than_or_equal_to: 0 },
     if: :final?
-  validates :current_inning, presence: true, numericality: { greater_than_or_equal_to: 1 },
-    if: :in_progress?
 
   before_save :sync_current_inning_with_status, :prevent_mirror_matches
   after_create :load_lineups
+
+  def hitting_team
+    innings.count % 2 == 0 ? "home" : "away"
+  end
 
   def next_half_inning
     completed_half_innings = innings.completed.count
 
     if innings.in_progress.count > 0
-      innings.in_progress.first
+      half_inning = innings.in_progress.first
+      self.update(current_inning: half_inning.number)
+      puts "---#{half_inning.half} #{half_inning.number}---"
+      half_inning
     else
-      Inning.new(
+      half_inning = Inning.create!(
         game: self,
         half: innings.completed.count % 2 == 0 ? :top : :bottom,
         status: :in_progress,
         number: next_inning(completed_half_innings),
         runs: 0  
       )
+      self.update(current_inning: half_inning.number)
+      puts "---#{half_inning.half} #{half_inning.number}---"
+      half_inning
     end
+
   end
 
   def going_final?
@@ -157,6 +166,7 @@ class Game < ActiveRecord::Base
   def end_game
     close_out_final_inning
     update(status: :final)
+    print_line_score
   end
 
   def tie_score

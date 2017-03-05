@@ -5,17 +5,8 @@ namespace :crude_game do
 
     while !game.final? do
       @half_inning_object = game.next_half_inning
-      @half_inning_object.save!
-      hitting_team = @half_inning_object.half == "top" ? "away" : "home"
-      game.update(current_inning: @half_inning_object.number)
-      puts "--- #{@half_inning_object.half} #{@half_inning_object.number} ---"
-      half_inning(hitting_team: hitting_team, game: game)
+      half_inning(hitting_team: game.hitting_team, game: game)
     end
-
-    puts "Yankees scored #{game.away_score} runs"
-    puts "Red Sox scored #{game.home_score} runs"
-
-    game.print_line_score
   end
 
   def half_inning(hitting_team:, game:)
@@ -293,8 +284,7 @@ namespace :crude_game do
       away_team: Team.find_by(name: "Yankees"),
       home_team: Team.find_by(name: "Red Sox"),
       start_time: Time.now,
-      status: :in_progress,
-      current_inning: 1
+      status: :in_progress
     )
   end
 end
