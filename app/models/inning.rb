@@ -23,6 +23,39 @@ class Inning < ActiveRecord::Base
   # TODO: Switch to after_commit and use https://github.com/grosser/test_after_commit
   after_save :update_game_score, unless: :destroyed?
 
+  attr_accessor :man_on_first, :man_on_second, :man_on_third
+
+  def play!
+    while !completed? do
+      play_next_at_bat! 
+      save!
+      break if game.going_final?
+    end
+  end
+
+  def play_next_at_bat!
+    hitter_index = game.hitting_team == "away" ? game.increment_away_hitter_index : game.increment_home_hitter_index
+    hitter = lineup[hitter_index]
+
+    plate_appearance = plate_appearances.create!(
+      pitcher: pitcher,
+      batter: lineup[hitter_index],
+      runner_on_first: man_on_first,
+      runner_on_second: man_on_second,
+      runner_on_third: man_on_third
+    )
+
+    puts "#{hitter.first_name} #{hitter.last_name} #{plate_appearance.outcome.code}" unless Rails.env.test?
+  end
+
+  def lineup
+    game.hitting_team == "away" ? game.lineups[:away_lineup] : game.lineups[:home_lineup]
+  end
+
+  def pitcher
+    game.hitting_team == "away" ? game.home_pitcher : game.away_pitcher
+  end
+
   def add_one_out
     if (0..2).include?(self.outs)
       self.update(outs: self.outs + 1)
@@ -41,11 +74,53 @@ class Inning < ActiveRecord::Base
     end
   end
 
+  def two_outs
+    outs == 2
+  end
+
+  def retire_the_side
+    clear_bases
+    self.update(outs: 3)
+  end
+
+  def runners_advance_one_base
+    return if bases_empty
+
+    if man_on_third
+      self.man_on_third = nil
+      self.runs += 1
+    end
+
+    if man_on_second
+      self.man_on_third = man_on_second
+      self.man_on_second = nil
+    end
+
+    if man_on_first
+      self.man_on_second = man_on_first
+      self.man_on_first = nil
+    end
+  end
+
+  def clear_bases
+    self.man_on_first, self.man_on_second, self.man_on_third = nil, nil, nil    
+  end
+
+  def runner_from_third_scores
+    return if man_on_third.nil?
+    self.man_on_third = nil
+    self.runs += 1
+  end
+
   private
 
   def set_default_values
     self.outs ||= 0
     self.runs ||= 0
+  end
+
+  def bases_empty
+    man_on_first.nil? && man_on_second.nil? && man_on_third.nil?
   end
 
   def ensure_inning_sequence

@@ -8,7 +8,6 @@ class Game < ActiveRecord::Base
 
   validates :away_team, presence: true
   validates :home_team, presence: true
-  validates :start_time, presence: true
 
   validates :away_score, numericality: { greater_than_or_equal_to: 0 },
     if: :in_progress?
@@ -19,8 +18,16 @@ class Game < ActiveRecord::Base
   validates :home_score, numericality: { greater_than_or_equal_to: 0 },
     if: :final?
 
+  after_initialize :set_default_values
   before_save :sync_current_inning_with_status, :prevent_mirror_matches
   after_create :load_lineups
+
+  def play!
+    save! unless persisted?
+    while !final? do
+      next_half_inning.play!
+    end
+  end
 
   def hitting_team
     innings.count % 2 == 0 ? "home" : "away"
@@ -32,7 +39,7 @@ class Game < ActiveRecord::Base
     if innings.in_progress.count > 0
       half_inning = innings.in_progress.first
       self.update(current_inning: half_inning.number)
-      puts "---#{half_inning.half} #{half_inning.number}---"
+      puts "---#{half_inning.half} #{half_inning.number}---" unless Rails.env.test?
       half_inning
     else
       half_inning = Inning.create!(
@@ -43,7 +50,7 @@ class Game < ActiveRecord::Base
         runs: 0  
       )
       self.update(current_inning: half_inning.number)
-      puts "---#{half_inning.half} #{half_inning.number}---"
+      puts "---#{half_inning.half} #{half_inning.number}---" unless Rails.env.test?
       half_inning
     end
 
@@ -142,6 +149,11 @@ class Game < ActiveRecord::Base
   end
 
   private
+
+  def set_default_values
+    self.status ||= Game.statuses[:scheduled]
+    self.start_time ||= Time.now
+  end
 
   def sync_current_inning_with_status
     self.current_inning = nil if self.final? || self.scheduled?
