@@ -231,4 +231,236 @@ RSpec.describe Inning do
       expect(subject.game.home_score).to eq(0)
     end
   end
+
+  describe "#pitcher" do
+    let(:home_pitcher) { "Mike" }
+    let(:away_pitcher) { "John" }
+
+    context "when the away team is up" do
+      before do
+        allow(game).to receive(:hitting_team).and_return("away")
+        allow(game).to receive(:home_pitcher).and_return(home_pitcher)
+      end
+
+      it "returns the home pitcher" do
+        expect(subject.pitcher).to eq(home_pitcher)
+      end
+    end
+
+    context "when the home team is up" do
+      before do
+        allow(game).to receive(:hitting_team).and_return("home")
+        allow(game).to receive(:away_pitcher).and_return(away_pitcher)
+      end
+
+      it "returns the away pitcher" do
+        expect(subject.pitcher).to eq(away_pitcher)
+      end
+    end
+  end
+
+  describe "#clear_bases" do
+    before do
+      subject.man_on_first = "Bob"
+      subject.man_on_second = "Kevin"
+      subject.man_on_third = nil
+    end
+
+    it "properly clears the bases" do
+      expect(subject.man_on_first).to eq("Bob")
+      expect(subject.man_on_second).to eq("Kevin")
+      subject.clear_bases
+      expect(subject.man_on_first).to be_nil
+      expect(subject.man_on_second).to be_nil
+      expect(subject.man_on_third).to be_nil
+    end
+  end
+
+  describe "#retire_the_side" do
+    before { allow(subject).to receive(:clear_bases).and_return(true) }
+
+    subject do
+      Inning.new(
+        game: game,
+        half: Inning.halves["top"],
+        status: Inning.statuses["in_progress"],
+        number: 1,
+        runs: 0,
+        outs: 2
+      )
+    end
+
+    it "clears the bases and sets the outs count to 3" do
+      subject.retire_the_side
+      expect(subject).to have_received(:clear_bases)
+      expect(subject.outs).to eq(3)
+    end
+  end
+
+  describe "#two_outs" do
+    before { allow(subject).to receive(:outs).and_return(out_count) }
+
+    context "when there are two outs" do
+      let(:out_count) { 2 }
+
+      it "returns true" do
+        expect(subject.two_outs).to eq(true)
+      end
+    end
+
+    context "when there is some other out count" do
+      let(:out_count) { 1 }
+
+      it "returns false" do
+        expect(subject.two_outs).to eq(false)
+      end
+    end
+  end
+
+  describe "#runner_from_third_scores" do
+    subject do
+      Inning.new(
+        game: game,
+        half: Inning.halves["top"],
+        status: Inning.statuses["in_progress"],
+        number: 1,
+        runs: 0,
+        outs: 1
+      )
+    end
+
+    context "if nobody is on third" do
+      it "does nothing" do
+        subject.runner_from_third_scores
+        expect(subject.runs).to eq(0)
+        expect(subject.man_on_first).to be_nil
+        expect(subject.man_on_second).to be_nil
+        expect(subject.man_on_third).to be_nil
+      end
+    end
+
+    context "if a runner is on third" do
+      before do
+        subject.man_on_third = "Bill"
+        subject.man_on_second = "Frank"
+      end
+
+      it "scores the man on third" do
+        subject.runner_from_third_scores
+        expect(subject.runs).to eq(1)
+        expect(subject.man_on_first).to be_nil
+        expect(subject.man_on_second).to eq("Frank")
+        expect(subject.man_on_third).to be_nil
+      end
+    end
+  end
+
+  describe "#runners_advance_one_base" do
+    subject do
+      Inning.new(
+        game: game,
+        half: Inning.halves["top"],
+        status: Inning.statuses["in_progress"],
+        number: 1,
+        runs: 0,
+        outs: 1
+      )
+    end
+
+    context "Nobody is on base" do
+      it "does nothing" do
+        subject.runners_advance_one_base
+        expect(subject.man_on_first).to be_nil
+        expect(subject.man_on_second).to be_nil
+        expect(subject.man_on_third).to be_nil
+      end
+    end
+
+    context "There are baserunners" do
+      before do
+        subject.man_on_third = "Pete"
+        subject.man_on_second = "Babe"
+        subject.man_on_first = "Joe"
+      end
+
+      it "moves all runners up one base" do
+        subject.runners_advance_one_base
+        expect(subject.runs).to eq(1)
+        expect(subject.man_on_first).to be_nil
+        expect(subject.man_on_second).to eq("Joe")
+        expect(subject.man_on_third).to eq("Babe")
+      end
+    end
+  end
+
+  describe "#lineup" do
+    let(:lineups) { { away_lineup: away_lineup, home_lineup: home_lineup } }
+    let(:away_lineup) { %w(Pete Babe Joe Hank Lefty Willie Jay Jacks Cy) }
+    let(:home_lineup) { %w(Foo Bar Baz Qux Quux Quuz Corge Grault Garply) }
+
+    before { allow(game).to receive(:lineups).and_return(lineups) }
+
+    context "when the away team is batting" do
+      before { allow(game).to receive(:hitting_team).and_return("away") }
+
+      subject do
+        Inning.new(
+          game: game,
+          half: Inning.halves["top"],
+          status: Inning.statuses["in_progress"],
+          number: 1,
+          runs: 0,
+          outs: 0
+        )
+      end
+
+      it "returns the away lineup" do
+        expect(subject.lineup).to eq(away_lineup)
+      end
+    end
+
+    context "when the home team is batting" do
+      before { allow(game).to receive(:hitting_team).and_return("home") }
+
+      subject do
+        Inning.new(
+          game: game,
+          half: Inning.halves["bottom"],
+          status: Inning.statuses["in_progress"],
+          number: 1,
+          runs: 0,
+          outs: 0
+        )
+      end
+      it "returns the home lineup" do
+        expect(subject.lineup).to eq(home_lineup)
+      end
+    end
+  end
+
+  describe "#play_next_at_bat!" do
+    let(:lineup) {%w(Ryder Paste) }
+    let(:pitcher) { "Dreyfus" }
+    let(:expected_hash) do
+      {
+        pitcher: pitcher,
+        batter: "Ryder",
+        runner_on_first: nil,
+        runner_on_second: "Bay",
+        runner_on_third: nil
+      }
+    end
+
+    before do
+      allow(subject).to receive(:lineup).and_return(lineup) 
+      allow(subject).to receive(:pitcher).and_return(pitcher) 
+      allow(subject).to receive_message_chain(:plate_appearances, :create!).with(expected_hash).and_return(true)
+      allow(subject).to receive(:man_on_second).and_return("Bay")
+    end
+
+    it "produces an outcome from the at-bat" do
+      expect(subject).to receive_message_chain(:plate_appearances, :create!).with(expected_hash)
+      subject.play_next_at_bat!
+    end
+  end
 end

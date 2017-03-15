@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Game do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:red_sox) { create(:red_sox) }
   let(:mets) { create(:mets) }
 
@@ -22,7 +24,6 @@ RSpec.describe Game do
 
   it { should validate_presence_of(:away_team) }
   it { should validate_presence_of(:home_team) }
-  it { should validate_presence_of(:start_time) }
 
   context "game is scheduled" do
     before do
@@ -387,5 +388,18 @@ RSpec.describe Game do
         expect(inning.runs).to eq(0)
       end
     end
+  end
+
+  describe "default values" do
+    let(:frozen_date) { Date.parse("2017-03-11")}
+
+    before { travel_to(frozen_date) }
+
+    it "sets the correct default values if none are provided" do
+      expect(subject.status).to eq("scheduled")
+      expect(subject.start_time).to eq(frozen_date)
+    end
+
+    after { travel_back }
   end
 end
