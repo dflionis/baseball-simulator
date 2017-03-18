@@ -909,7 +909,7 @@ Player.create!(
       "6" => "WALK",
       "7" => {
         "1-5" => "SI*",
-        "6-20" => "gb (ss)"
+        "6-20" => "gb (ss) B"
       },
       "8" => "strikeout",
       "9" => "strikeout",

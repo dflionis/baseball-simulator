@@ -74,13 +74,12 @@ class Inning < ActiveRecord::Base
     end
   end
 
-  def two_outs
+  def two_outs?
     outs == 2
   end
 
-  def retire_the_side
-    clear_bases
-    self.update(outs: 3)
+  def three_outs?
+    outs == 3
   end
 
   def runners_advance_one_base
@@ -102,6 +101,26 @@ class Inning < ActiveRecord::Base
     end
   end
 
+  def runners_advance_two_bases
+    return if bases_empty
+
+    if man_on_third
+      self.man_on_third = nil
+      self.runs += 1
+    end
+
+    if man_on_second
+      self.man_on_second = nil
+      self.runs += 1
+    end
+
+    if man_on_first
+      self.man_on_third = man_on_first
+      self.man_on_first = nil
+    end
+  end
+
+
   def clear_bases
     self.man_on_first, self.man_on_second, self.man_on_third = nil, nil, nil    
   end
@@ -110,6 +129,20 @@ class Inning < ActiveRecord::Base
     return if man_on_third.nil?
     self.man_on_third = nil
     self.runs += 1
+  end
+
+  def everyone_scores_except_batter
+    self.runs += [man_on_third, man_on_second, man_on_first].compact.size
+    clear_bases
+  end
+
+  def everyone_scores_including_batter
+    self.runs += ([man_on_third, man_on_second, man_on_first].compact.size + 1)
+    clear_bases
+  end
+
+  def at_least_one_runner_forced?
+    man_on_first
   end
 
   private
