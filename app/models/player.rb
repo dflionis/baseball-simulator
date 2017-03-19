@@ -1,4 +1,4 @@
-class Player < ActiveRecord::Base
+class Player < ApplicationRecord
   belongs_to :team
 
   has_many :player_positions
@@ -66,8 +66,8 @@ class Player < ActiveRecord::Base
   private
 
   def valid_outcomes_json?
-    valid_vs_lhp_keys? && valid_vs_rhp_keys? &&
-      valid_vs_lhp_ranges? && valid_vs_rhp_ranges?
+    (valid_vs_lhp_keys? && valid_vs_rhp_keys? &&
+      valid_vs_lhp_ranges? && valid_vs_rhp_ranges?) || throw(:abort)
   end
 
   def valid_vs_lhp_keys?

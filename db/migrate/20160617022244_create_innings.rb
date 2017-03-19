@@ -1,4 +1,4 @@
-class CreateInnings < ActiveRecord::Migration
+class CreateInnings < ActiveRecord::Migration[4.2]
   def change
     create_table :innings do |t|
       t.references :game, null: false

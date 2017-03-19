@@ -1,4 +1,4 @@
-class CreatePitchers < ActiveRecord::Migration
+class CreatePitchers < ActiveRecord::Migration[4.2]
   def up
     execute <<-SQL
       CREATE TYPE throws AS ENUM('R', 'L');

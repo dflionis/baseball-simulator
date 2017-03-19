@@ -1,4 +1,4 @@
-class DistinguishStartersFromRelievers < ActiveRecord::Migration
+class DistinguishStartersFromRelievers < ActiveRecord::Migration[4.2]
   def up
     execute <<-SQL
       CREATE TYPE pitcher_type AS ENUM('SP', 'RP', 'SP/RP', 'RP/SP');

@@ -1,4 +1,4 @@
-class CreatePlateAppearances < ActiveRecord::Migration
+class CreatePlateAppearances < ActiveRecord::Migration[4.2]
   def change
     create_table :plate_appearances do |t|
       t.references :inning, null: false

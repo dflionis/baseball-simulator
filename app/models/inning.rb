@@ -1,4 +1,4 @@
-class Inning < ActiveRecord::Base
+class Inning < ApplicationRecord
   belongs_to :game
 
   has_many :plate_appearances
@@ -37,13 +37,15 @@ class Inning < ActiveRecord::Base
     hitter_index = game.hitting_team == "away" ? game.increment_away_hitter_index : game.increment_home_hitter_index
     hitter = lineup[hitter_index]
 
-    plate_appearance = plate_appearances.create!(
+    plate_appearance = PlateAppearance.create!(
+      inning: self,
       pitcher: pitcher,
       batter: lineup[hitter_index],
       runner_on_first: man_on_first,
       runner_on_second: man_on_second,
       runner_on_third: man_on_third
     )
+    
 
     puts "#{hitter.first_name} #{hitter.last_name} #{plate_appearance.outcome.code}" unless Rails.env.test?
   end

@@ -1,4 +1,4 @@
-class CreatePlayerPositions < ActiveRecord::Migration
+class CreatePlayerPositions < ActiveRecord::Migration[4.2]
   def up
     execute <<-SQL
       CREATE TYPE fielding_rating AS ENUM('1', '2', '3', '4', '5');

@@ -4,6 +4,7 @@ FactoryGirl.define do
     name "Red Sox"
     abbreviation "BOS"
     association :division, factory: :al_east
+    logo "foo"
   end
 
   factory :mets, class: Team do
