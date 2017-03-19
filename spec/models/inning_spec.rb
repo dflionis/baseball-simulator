@@ -276,35 +276,14 @@ RSpec.describe Inning do
     end
   end
 
-  describe "#retire_the_side" do
-    before { allow(subject).to receive(:clear_bases).and_return(true) }
-
-    subject do
-      Inning.new(
-        game: game,
-        half: Inning.halves["top"],
-        status: Inning.statuses["in_progress"],
-        number: 1,
-        runs: 0,
-        outs: 2
-      )
-    end
-
-    it "clears the bases and sets the outs count to 3" do
-      subject.retire_the_side
-      expect(subject).to have_received(:clear_bases)
-      expect(subject.outs).to eq(3)
-    end
-  end
-
-  describe "#two_outs" do
+  describe "#two_outs?" do
     before { allow(subject).to receive(:outs).and_return(out_count) }
 
     context "when there are two outs" do
       let(:out_count) { 2 }
 
       it "returns true" do
-        expect(subject.two_outs).to eq(true)
+        expect(subject.two_outs?).to eq(true)
       end
     end
 
@@ -312,7 +291,7 @@ RSpec.describe Inning do
       let(:out_count) { 1 }
 
       it "returns false" do
-        expect(subject.two_outs).to eq(false)
+        expect(subject.two_outs?).to eq(false)
       end
     end
   end
@@ -461,6 +440,186 @@ RSpec.describe Inning do
     it "produces an outcome from the at-bat" do
       expect(subject).to receive_message_chain(:plate_appearances, :create!).with(expected_hash)
       subject.play_next_at_bat!
+    end
+  end
+
+  describe "#runners_advance_two_bases" do
+    subject do
+      Inning.new(
+        game: game,
+        half: Inning.halves["top"],
+        status: Inning.statuses["in_progress"],
+        number: 1,
+        runs: 0,
+        outs: 1
+      )
+    end
+
+    context "Nobody is on base" do
+      it "does nothing" do
+        subject.runners_advance_two_bases
+        expect(subject.man_on_first).to be_nil
+        expect(subject.man_on_second).to be_nil
+        expect(subject.man_on_third).to be_nil
+        expect(subject.runs).to eq(0)
+      end
+    end
+
+    context "There are baserunners" do
+      before do
+        subject.man_on_third = "Pete"
+        subject.man_on_second = "Babe"
+        subject.man_on_first = "Joe"
+      end
+
+      it "moves all runners up one base" do
+        subject.runners_advance_two_bases
+        expect(subject.runs).to eq(2)
+        expect(subject.man_on_first).to be_nil
+        expect(subject.man_on_second).to be_nil
+        expect(subject.man_on_third).to eq("Joe")
+      end
+    end
+  end
+
+  describe "#everyone_scores_except_batter" do
+    subject do
+      Inning.new(
+        game: game,
+        half: Inning.halves["top"],
+        status: Inning.statuses["in_progress"],
+        number: 1,
+        runs: 0,
+        outs: 1
+      )
+    end
+
+    context "Nobody is on base" do
+      it "does nothing" do
+        subject.everyone_scores_except_batter
+        expect(subject.runs).to eq(0)
+        expect(subject.man_on_first).to be_nil
+        expect(subject.man_on_second).to be_nil
+        expect(subject.man_on_third).to be_nil
+      end
+    end
+
+    context "There are baserunners" do
+      before do
+        subject.man_on_third = "Pete"
+        subject.man_on_second = "Babe"
+        subject.man_on_first = "Joe"
+      end
+
+      it "scores the runners and empties the bases" do
+        subject.everyone_scores_except_batter
+        expect(subject.runs).to eq(3)
+        expect(subject.man_on_first).to be_nil
+        expect(subject.man_on_second).to be_nil
+        expect(subject.man_on_third).to be_nil
+      end
+    end 
+  end
+
+  describe "#everyone_scores_including_batter" do
+    subject do
+      Inning.new(
+        game: game,
+        half: Inning.halves["top"],
+        status: Inning.statuses["in_progress"],
+        number: 1,
+        runs: 0,
+        outs: 1
+      )
+    end
+
+    context "Nobody is on base" do
+      it "scores the batter and nobody else" do
+        subject.everyone_scores_including_batter
+        expect(subject.runs).to eq(1)
+        expect(subject.man_on_first).to be_nil
+        expect(subject.man_on_second).to be_nil
+        expect(subject.man_on_third).to be_nil
+      end
+    end
+
+    context "There are baserunners" do
+      before do
+        subject.man_on_third = "Pete"
+        subject.man_on_second = "Babe"
+        subject.man_on_first = "Joe"
+      end
+
+      it "scores the runners and empties the bases" do
+        subject.everyone_scores_including_batter
+        expect(subject.runs).to eq(4)
+        expect(subject.man_on_first).to be_nil
+        expect(subject.man_on_second).to be_nil
+        expect(subject.man_on_third).to be_nil
+      end
+    end 
+  end
+
+  describe "#at_least_one_runner_forced?" do
+    subject do
+      Inning.new(
+        game: game,
+        half: Inning.halves["top"],
+        status: Inning.statuses["in_progress"],
+        number: 1,
+        runs: 0,
+        outs: 1
+      )
+    end
+
+    context "a runner is not on first" do
+      it "returns a falsey value" do
+        expect(subject.at_least_one_runner_forced?).to be_falsey
+      end
+    end
+
+    context "a runner is on first" do
+      before { subject.man_on_first = "Kelly" }
+
+      it "returns a truthy value" do
+        expect(subject.at_least_one_runner_forced?).to be_truthy
+      end
+    end
+  end
+
+  describe "three_outs?" do
+    context "when there are 3 outs" do
+      subject do
+        Inning.new(
+          game: game,
+          half: Inning.halves["top"],
+          status: Inning.statuses["completed"],
+          number: 1,
+          runs: 0,
+          outs: 3
+        )
+      end
+
+      it "returns true" do
+        expect(subject.three_outs?).to eq(true)
+      end
+    end
+
+    context "when there are less than 3 outs" do
+      subject do
+        Inning.new(
+          game: game,
+          half: Inning.halves["top"],
+          status: Inning.statuses["in_progress"],
+          number: 1,
+          runs: 0,
+          outs: 2
+        )
+      end
+
+      it "returns false" do
+        expect(subject.three_outs?).to eq(false)
+      end
     end
   end
 end

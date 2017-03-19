@@ -18,194 +18,71 @@ class PlateAppearance < ActiveRecord::Base
   def play_out_at_bat
     determine_outcome
     code = outcome.code
+    code.slice!(" with injury") # Implement injuries later
+    code.slice!(" plus injury") # Implement injuries later
 
-    if code == "strikeout"
+    # TODO: Sort these by probability at some point
+    if simple_out?(code)
       inning.add_one_out
-    elsif code.downcase.first(3) == "fly"
-      #### FLYBALL A #######
-      if code =~ /A$/
-        if inning.two_outs
-          inning.retire_the_side
-        else
-          inning.add_one_out
-          inning.runners_advance_one_base
-        end
-      #### FLYBALL B #######
-      elsif code =~ /B\.?$/
-        if inning.two_outs
-          inning.retire_the_side
-        else
-          inning.add_one_out
-          inning.runner_from_third_scores
-        end
-      #### FLYBALL C #######
+    elsif simple_single_like_event?(code)
+      inning.runners_advance_one_base
+      inning.man_on_first = batter
+    elsif home_run?(code)
+      inning.everyone_scores_including_batter
+    elsif single_with_two_asterisk?(code)
+      inning.runners_advance_two_bases
+      inning.man_on_first = batter
+    elsif double?(code)
+      inning.runners_advance_two_bases
+      inning.man_on_second = batter
+    elsif triple?(code)
+      inning.everyone_scores_except_batter
+      inning.man_on_third = batter
+    elsif groundball_a?(code)
+      if !inning.at_least_one_runner_forced? || inning.two_outs?
+        inning.add_one_out
       else
-        inning.add_one_out
+        inning.add_two_outs 
+        inning.man_on_first = nil
+        inning.runners_advance_one_base unless inning.three_outs?
       end
-    elsif code.downcase.first(2) == "gb"
-      # TODO: Add Groundball B...handle Groundball X in some way for now
-      if code =~ /A\+?$/
-        if inning.two_outs
-          inning.retire_the_side
-        elsif (0..1).include?(inning.outs)
-          if inning.man_on_first
-            inning.add_two_outs
-            inning.clear_bases
-          elsif inning.man_on_second && inning.man_on_third
-            inning.add_one_out
-            inning.runs += 1
-            inning.man_on_third = inning.man_on_second # FIXME: I think the runners may hold?
-            inning.man_on_second = nil
-          elsif inning.man_on_third
-            inning.add_one_out
-            inning.runs += 1
-            inning.man_on_third = nil
-          elsif inning.man_on_second
-            inning.add_one_out
-            inning.man_on_third = inning.man_on_second
-            inning.man_on_second = nil
-          else # man on first
-            inning.add_one_out
-          end
-        end
-      elsif code =~ /C$/
-        if inning.two_outs
-          inning.retire_the_side
-        else
-          if inning.man_on_third
-            inning.runs += 1
-            inning.man_on_third = nil
-              if inning.man_on_second
-                inning.man_on_third = inning.man_on_second
-                inning.man_on_second = nil
-              end
-              if inning.man_on_first
-                inning.man_on_second = inning.man_on_first
-                inning.man_on_first = nil
-              end
-            elsif inning.man_on_second
-              inning.man_on_third = inning.man_on_second
-              inning.man_on_second = nil
-              if inning.man_on_first
-                inning.man_on_second = inning.man_on_first
-                inning.man_on_first = nil
-              end
-            elsif inning.man_on_first
-              inning.man_on_second = inning.man_on_first
-              inning.man_on_first = nil
-            else
-              # nothing happens
-            end
-            inning.add_one_out
-          end
-        else
-          inning.add_one_out
-        end
-      elsif code =~ /^popout/
+    elsif groundball_b?(code)
+      if !inning.at_least_one_runner_forced? || inning.two_outs?
         inning.add_one_out
-      elsif code =~ /^lineout/
-        inning.add_one_out
-      elsif code =~ /^foulout/
-        inning.add_one_out
-      elsif code =~ /^lo/
-        inning.add_one_out
-      elsif code =~ /^CATCH/
-        inning.add_one_out
-      elsif code == "HOMERUN" || code == "HR" || code == 'N-HR'
-        inning.runs += ([inning.man_on_third, inning.man_on_second, inning.man_on_first].compact.size + 1)
-        inning.clear_bases
-      elsif code =~ /^SI/i && code =~ /\*{2}$/
-        if inning.man_on_third
-          inning.runs += 1
-          inning.man_on_third = nil
-          if inning.man_on_second
-            inning.runs += 1
-            inning.man_on_second = nil
-          end
-          if inning.man_on_third
-            inning.man_on_third = inning.man_on_first
-            inning.man_on_first = nil
-          end
-          inning.man_on_first = batter
-        elsif inning.man_on_second
-          inning.runs += 1
-          inning.man_on_second = nil
-          if inning.man_on_first
-            inning.man_on_third = inning.man_on_first
-            inning.man_on_first = nil
-          end
-          inning.man_on_first = batter
-        elsif inning.man_on_first
-          inning.man_on_third = inning.man_on_first
-          inning.man_on_first = nil
-          inning.man_on_first = batter
-        else
-          inning.man_on_first = batter
-        end
-      elsif code =~ /^SI/i || code =~ /^HBP/ || code =~ /^WALK/
-        if inning.man_on_third
-          inning.runs += 1
-          inning.man_on_third = nil
-          if inning.man_on_second
-            inning.man_on_third = inning.man_on_second
-            inning.man_on_second = nil
-          end 
-          if inning.man_on_first
-            inning.man_on_second = inning.man_on_first
-            inning.man_on_first = nil
-          end
-          inning.man_on_first = batter
-        elsif inning.man_on_second
-          inning.man_on_third = inning.man_on_second
-          inning.man_on_second = nil
-          if inning.man_on_first
-            inning.man_on_second = inning.man_on_first
-            inning.man_on_first = nil
-          end
-          inning.man_on_first = batter
-        elsif inning.man_on_first
-          inning.man_on_second = inning.man_on_first
-          inning.man_on_first = nil
-          inning.man_on_first = batter
-        else
-          inning.man_on_first = batter
-        end
-      elsif code =~ /^DO/i
-        if inning.man_on_third
-          inning.runs += 1
-          inning.man_on_third = nil
-          if inning.man_on_second
-            inning.runs += 1
-            inning.man_on_second = nil
-          end
-          if inning.man_on_first
-            inning.man_on_third = inning.man_on_first
-            inning.man_on_first = nil
-          end
-          inning.man_on_second = batter
-        elsif inning.man_on_second
-          inning.runs += 1
-          inning.man_on_second = nil
-          if inning.man_on_first
-            inning.man_on_third = inning.man_on_first
-            inning.man_on_first = nil
-          end
-          inning.man_on_second = batter
-        elsif inning.man_on_first
-          inning.man_on_third = inning.man_on_first
-          inning.man_on_first = nil
-          inning.man_on_second = batter
-        else
-          inning.man_on_second = batter
-        end
-      elsif code =~ /^TR/i
-        inning.runs += [inning.man_on_third, inning.man_on_second, inning.man_on_first].compact.size
-        inning.clear_bases
-        inning.man_on_third = batter
       else
-        raise "You need to code: #{code}"
+        inning.man_on_first = nil
+        inning.add_one_out
+        inning.man_on_first = batter
       end
-    #TODO: Spacing problem
+    elsif groundball_c?(code)
+      inning.add_one_out
+      inning.runners_advance_one_base unless inning.three_outs?
+    elsif groundball_x?(code)
+      # NOT YET CODED...pretend its Flyball A
+      if !inning.at_least_one_runner_forced? || inning.two_outs?
+        inning.add_one_out
+      else
+        inning.add_two_outs 
+        inning.man_on_first = nil
+        inning.runners_advance_one_base unless inning.three_outs?
+      end
+    elsif flyball_a?(code)
+      inning.add_one_out
+      inning.runners_advance_one_base unless inning.three_outs?
+    elsif flyball_b?(code)
+      inning.add_one_out
+      inning.runner_from_third_scores unless inning.three_outs?
+    elsif flyball_c?(code)
+      inning.add_one_out
+    elsif flyball_x?(code)
+      # NOT YET CODED...pretend its Flyball A
+      inning.add_one_out
+      inning.runners_advance_one_base unless inning.three_outs?
+    else
+      raise "Unrecognized Code: #{code}"
+    end
+
+    inning.save!
   end
 
   def determine_outcome
@@ -241,5 +118,69 @@ class PlateAppearance < ActiveRecord::Base
     else
       raise "unreachable condition"
     end
+  end
+
+  def simple_out?(code)
+    simple_outs = ["strikeout", /^popout/, /^lineout/, /^foulout/, /^lo/, /^CATCH/]
+    simple_outs.each do |simple_out|
+      if simple_out.class == Regexp
+        return true if code =~ simple_out
+      else
+        return true if code == simple_out
+      end
+    end
+    false
+  end
+
+  def home_run?(code)
+    %w(HOMERUN HR N-HR).include?(code)
+  end
+
+  def single_with_two_asterisk?(code)
+    code =~ /^SI/i && code =~ /\*{2}$/
+  end
+
+  def double?(code)
+    code =~ /^DO/i
+  end
+
+  def triple?(code)
+    code =~ /^TR/i
+  end
+
+  def simple_single_like_event?(code)
+    (code =~ /^SI/i && code !~ /\*{2}$/) || code =~ /^HBP/ || code =~ /^WALK/
+  end
+
+  def groundball_a?(code)
+    code.downcase.first(2) == "gb" && code =~ /A\+?$/
+  end
+
+  def groundball_b?(code)
+    code.downcase.first(2) == "gb" && code =~ /B\+?$/
+  end
+
+  def groundball_c?(code)
+    code.downcase.first(2) == "gb" && code =~ /C$/
+  end
+
+  def groundball_x?(code)
+    code.downcase.first(2) == "gb" && code =~ /X\+?$/
+  end
+
+  def flyball_a?(code)
+    code.downcase.first(3) == "fly" && code =~ /A.?$/
+  end
+
+  def flyball_b?(code)
+    code.downcase.first(3) == "fly" && code =~ /B.?$/
+  end
+
+  def flyball_c?(code)
+    code.downcase.first(3) == "fly" && code =~ /C.?$/
+  end
+
+  def flyball_x?(code)
+    code.downcase.first(3) == "fly" && code =~ /X.?$/
   end
 end

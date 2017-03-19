@@ -64,7 +64,6 @@ outcomes = [
   "gb (3b) B",
   "gb (p) A",
   "gb (p) B",
-  "gb (ss)",
   "gb (ss) A",
   "gb (ss) A plus injury",
   "gb (ss) A+",
