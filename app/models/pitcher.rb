@@ -1,4 +1,4 @@
-class Pitcher < ActiveRecord::Base
+class Pitcher < ApplicationRecord
   belongs_to :team
 
   before_save :valid_outcomes_json?
@@ -45,8 +45,9 @@ class Pitcher < ActiveRecord::Base
   private
 
   def valid_outcomes_json?
-    valid_vs_lhb_keys? && valid_vs_rhb_keys? &&
-      valid_vs_lhb_ranges? && valid_vs_rhb_ranges?
+    (valid_vs_lhb_keys? && valid_vs_rhb_keys? &&
+      valid_vs_lhb_ranges? && valid_vs_rhb_ranges?) ||
+      throw(:abort)
   end
 
   def valid_vs_lhb_keys?

@@ -1,4 +1,4 @@
-class PlateAppearance < ActiveRecord::Base
+class PlateAppearance < ApplicationRecord
   belongs_to :inning
   belongs_to :pitcher
   belongs_to :batter, class_name: "Player"

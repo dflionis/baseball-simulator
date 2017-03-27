@@ -1,4 +1,4 @@
-class CreatePlayers < ActiveRecord::Migration
+class CreatePlayers < ActiveRecord::Migration[4.2]
   def up
     execute <<-SQL
       CREATE TYPE batting_hand AS ENUM('R', 'L', 'S');

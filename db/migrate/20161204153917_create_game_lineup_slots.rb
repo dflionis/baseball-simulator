@@ -1,4 +1,4 @@
-class CreateGameLineupSlots < ActiveRecord::Migration
+class CreateGameLineupSlots < ActiveRecord::Migration[4.2]
   def change
     create_table :game_lineup_slots do |t|
       t.references :game, null: false

@@ -1,4 +1,4 @@
-class CreateGames < ActiveRecord::Migration
+class CreateGames < ActiveRecord::Migration[4.2]
   def change
     create_table :games do |t|
       t.references :away_team, references: :team, null: false

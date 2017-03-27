@@ -422,6 +422,7 @@ RSpec.describe Inning do
     let(:pitcher) { "Dreyfus" }
     let(:expected_hash) do
       {
+        inning: subject,
         pitcher: pitcher,
         batter: "Ryder",
         runner_on_first: nil,
@@ -433,12 +434,12 @@ RSpec.describe Inning do
     before do
       allow(subject).to receive(:lineup).and_return(lineup) 
       allow(subject).to receive(:pitcher).and_return(pitcher) 
-      allow(subject).to receive_message_chain(:plate_appearances, :create!).with(expected_hash).and_return(true)
+      allow(PlateAppearance).to receive(:create!).with(expected_hash).and_return(true)
       allow(subject).to receive(:man_on_second).and_return("Bay")
     end
 
     it "produces an outcome from the at-bat" do
-      expect(subject).to receive_message_chain(:plate_appearances, :create!).with(expected_hash)
+      expect(PlateAppearance).to receive(:create!).with(expected_hash)
       subject.play_next_at_bat!
     end
   end

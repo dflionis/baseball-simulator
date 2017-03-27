@@ -1,4 +1,4 @@
-class Game < ActiveRecord::Base
+class Game < ApplicationRecord
   belongs_to :away_team, class_name: "Team"
   belongs_to :home_team, class_name: "Team"
 
@@ -99,10 +99,12 @@ class Game < ActiveRecord::Base
 
       print home_team.abbreviation + "   "
       home_innings = innings.where(half: Inning.halves["bottom"]).order(:number)
-      home_innings.push(OpenStruct.new(runs: "X")) if home_innings.count == 8
       home_innings.each do |i|
         print i.runs
         print "  "
+      end
+      if home_innings.count == 8
+        print "X  "
       end
       print home_score
       print "  "

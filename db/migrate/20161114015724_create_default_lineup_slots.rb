@@ -1,4 +1,4 @@
-class CreateDefaultLineupSlots < ActiveRecord::Migration
+class CreateDefaultLineupSlots < ActiveRecord::Migration[4.2]
   def change
     create_table :default_lineup_slots do |t|
       t.references :team, null: false

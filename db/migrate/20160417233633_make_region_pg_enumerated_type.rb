@@ -1,4 +1,4 @@
-class MakeRegionPgEnumeratedType < ActiveRecord::Migration
+class MakeRegionPgEnumeratedType < ActiveRecord::Migration[4.2]
   def up
     execute <<-SQL
       CREATE TYPE region AS ENUM('East', 'Central', 'West');

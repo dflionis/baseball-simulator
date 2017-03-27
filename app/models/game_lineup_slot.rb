@@ -1,4 +1,4 @@
-class GameLineupSlot < ActiveRecord::Base
+class GameLineupSlot < ApplicationRecord
   belongs_to :game
   belongs_to :player
   belongs_to :position
