@@ -50,4 +50,6 @@ group :test do
   gem 'shoulda-matchers'
   gem "factory_girl_rails"
   gem 'rails-controller-testing'
+  gem 'cucumber-rails', require: false
+  gem 'database_cleaner'
 end

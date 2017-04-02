@@ -7,6 +7,9 @@ development: &default
   username: baseballsimulator
   password: baseball
 
-test:
+test: &test
   <<: *default
   database: baseballsimulator_test
+
+cucumber:
+  <<: *test
