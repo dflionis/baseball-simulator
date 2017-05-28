@@ -140,6 +140,18 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE ar_internal_metadata (
+    key character varying NOT NULL,
+    value character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: default_lineup_slots; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -217,7 +229,16 @@ CREATE TABLE game_lineup_slots (
     slot integer NOT NULL,
     position_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    ab integer DEFAULT 0 NOT NULL,
+    r integer DEFAULT 0 NOT NULL,
+    h integer DEFAULT 0 NOT NULL,
+    rbi integer DEFAULT 0 NOT NULL,
+    bb integer DEFAULT 0 NOT NULL,
+    so integer DEFAULT 0 NOT NULL,
+    doubles integer DEFAULT 0 NOT NULL,
+    triples integer DEFAULT 0 NOT NULL,
+    hr integer DEFAULT 0 NOT NULL
 );
 
 
@@ -352,7 +373,14 @@ CREATE TABLE outcomes (
     id integer NOT NULL,
     code character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    ab boolean DEFAULT true NOT NULL,
+    h boolean DEFAULT false NOT NULL,
+    bb boolean DEFAULT false NOT NULL,
+    so boolean DEFAULT false NOT NULL,
+    double boolean DEFAULT false NOT NULL,
+    triple boolean DEFAULT false NOT NULL,
+    hr boolean DEFAULT false NOT NULL
 );
 
 
@@ -722,6 +750,14 @@ ALTER TABLE ONLY teams ALTER COLUMN id SET DEFAULT nextval('teams_id_seq'::regcl
 
 
 --
+-- Name: ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY ar_internal_metadata
+    ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
 -- Name: default_lineup_slots_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -922,41 +958,27 @@ CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (v
 
 SET search_path TO "$user",public;
 
-INSERT INTO schema_migrations (version) VALUES ('20160312201127');
+INSERT INTO "schema_migrations" (version) VALUES
+('20160312201127'),
+('20160319021924'),
+('20160319232808'),
+('20160320203038'),
+('20160417233633'),
+('20160425020455'),
+('20160501202135'),
+('20160520022013'),
+('20160521220817'),
+('20160605223824'),
+('20160606021734'),
+('20160617022244'),
+('20161114015724'),
+('20161125210911'),
+('20161126181033'),
+('20161202024125'),
+('20161204153917'),
+('20170101234806'),
+('20170103025525'),
+('20170601012133'),
+('20170601013937');
 
-INSERT INTO schema_migrations (version) VALUES ('20160319021924');
-
-INSERT INTO schema_migrations (version) VALUES ('20160319232808');
-
-INSERT INTO schema_migrations (version) VALUES ('20160320203038');
-
-INSERT INTO schema_migrations (version) VALUES ('20160417233633');
-
-INSERT INTO schema_migrations (version) VALUES ('20160425020455');
-
-INSERT INTO schema_migrations (version) VALUES ('20160501202135');
-
-INSERT INTO schema_migrations (version) VALUES ('20160520022013');
-
-INSERT INTO schema_migrations (version) VALUES ('20160521220817');
-
-INSERT INTO schema_migrations (version) VALUES ('20160605223824');
-
-INSERT INTO schema_migrations (version) VALUES ('20160606021734');
-
-INSERT INTO schema_migrations (version) VALUES ('20160617022244');
-
-INSERT INTO schema_migrations (version) VALUES ('20161114015724');
-
-INSERT INTO schema_migrations (version) VALUES ('20161125210911');
-
-INSERT INTO schema_migrations (version) VALUES ('20161126181033');
-
-INSERT INTO schema_migrations (version) VALUES ('20161202024125');
-
-INSERT INTO schema_migrations (version) VALUES ('20161204153917');
-
-INSERT INTO schema_migrations (version) VALUES ('20170101234806');
-
-INSERT INTO schema_migrations (version) VALUES ('20170103025525');
 

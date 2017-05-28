@@ -92,6 +92,21 @@ outcomes = [
   "strikeout plus injury"
 ]
 
+# TODO: Handle sacrifice at-bats that shouldn't count as ABs
 outcomes.each do |outcome|
-  Outcome.create!(code: outcome)
+  if ["strikeout", "strikeout plus injury"].include?(outcome)
+    Outcome.create!(code: outcome, so: true)
+  elsif ["DO", "DO**", "DOUBLE (cf)", "DOUBLE (lf)", "DOUBLE (rf)"].include?(outcome)
+    Outcome.create!(code: outcome, h: true, double: true)
+  elsif ["TR"].include?(outcome)
+    Outcome.create!(code: outcome, h: true, triple: true)
+  elsif ["HOMERUN", "N-HR", "HR"].include?(outcome)
+    Outcome.create!(code: outcome, h: true, hr: true)
+  elsif ["WALK", "HBP", "HBP plus injury"].include?(outcome)
+    Outcome.create!(code: outcome, ab: false, bb: true)
+  elsif ["SI", "SI*", "SI**", "SINGLE", "SINGLE*", "SINGLE**", "SINGLE (cf)", "SINGLE (lf)", "SINGLE (rf)"].include?(outcome)
+    Outcome.create!(code: outcome, h: true)
+  else
+    Outcome.create!(code: outcome)
+  end
 end

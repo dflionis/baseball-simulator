@@ -59,7 +59,7 @@ RSpec.describe Team do
     let(:todays_lineup) { [] }
     let(:mookie) { create(:mookie_betts) }
     let(:shadow_mookie) { create(:mookie_betts, team: create(:mets)) }
-    let(:expected_lineup) { [shadow_mookie, mookie] }
+    let(:expected_lineup) { [shadow_mookie.game_lineup_slots.first, mookie.game_lineup_slots.first] }
 
     before do
       allow_any_instance_of(DefaultLineupSlot).to receive(:player_can_play_position).and_return(true)

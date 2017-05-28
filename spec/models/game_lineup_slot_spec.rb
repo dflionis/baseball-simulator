@@ -33,4 +33,14 @@ RSpec.describe GameLineupSlot do
 
   it { should validate_numericality_of(:slot).is_greater_than_or_equal_to(1) }
   it { should validate_numericality_of(:slot).is_less_than_or_equal_to(9) }
+
+  describe "default values" do
+    let(:statistics) { %i(ab r h rbi bb so doubles triples hr) }
+
+    it "sets the correct default values if none are provided" do
+      statistics.each do |stat|
+        expect(subject.send(stat)).to eq(0)
+      end
+    end
+  end
 end

@@ -47,7 +47,7 @@ class Inning < ApplicationRecord
     )
     
 
-    puts "#{hitter.first_name} #{hitter.last_name} #{plate_appearance.outcome.code}" unless Rails.env.test?
+    puts "#{hitter.player.first_name} #{hitter.player.last_name} #{plate_appearance.outcome.code}" unless Rails.env.test?
   end
 
   def lineup
@@ -88,8 +88,9 @@ class Inning < ApplicationRecord
     return if bases_empty
 
     if man_on_third
-      self.man_on_third = nil
+      self.man_on_third.increment!(:r)  # TODO: Do it in a transaction?!?
       self.runs += 1
+      self.man_on_third = nil
     end
 
     if man_on_second
@@ -107,13 +108,15 @@ class Inning < ApplicationRecord
     return if bases_empty
 
     if man_on_third
-      self.man_on_third = nil
+      self.man_on_third.increment!(:r)
       self.runs += 1
+      self.man_on_third = nil
     end
 
     if man_on_second
-      self.man_on_second = nil
+      self.man_on_second.increment!(:r)
       self.runs += 1
+      self.man_on_second = nil
     end
 
     if man_on_first
@@ -129,16 +132,23 @@ class Inning < ApplicationRecord
 
   def runner_from_third_scores
     return if man_on_third.nil?
-    self.man_on_third = nil
+    self.man_on_third.increment!(:r)
     self.runs += 1
+    self.man_on_third = nil
   end
 
   def everyone_scores_except_batter
+    self.man_on_third.increment!(:r) if self.man_on_third
+    self.man_on_second.increment!(:r) if self.man_on_second
+    self.man_on_first.increment!(:r) if self.man_on_first
     self.runs += [man_on_third, man_on_second, man_on_first].compact.size
     clear_bases
   end
 
   def everyone_scores_including_batter
+    self.man_on_third.increment!(:r) if self.man_on_third
+    self.man_on_second.increment!(:r) if self.man_on_second
+    self.man_on_first.increment!(:r) if self.man_on_first
     self.runs += ([man_on_third, man_on_second, man_on_first].compact.size + 1)
     clear_bases
   end

@@ -26,8 +26,7 @@ class Team < ApplicationRecord
     GameLineupSlot.where(
       team: home ? GameLineupSlot.teams[:home] : GameLineupSlot.teams[:away],
       game: game
-    ).order(:slot).
-    map(&:player)
+    ).order(:slot)
   end
 
   private

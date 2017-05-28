@@ -3,6 +3,7 @@ class Game < ApplicationRecord
   belongs_to :home_team, class_name: "Team"
 
   has_many :innings, dependent: :destroy
+  has_many :game_lineup_slots, dependent: :destroy
 
   enum status: [:scheduled, :in_progress, :final]
 
@@ -93,7 +94,7 @@ class Game < ApplicationRecord
       end
       print away_score
       print "  "
-      print "?"
+      print game_lineup_slots.where(team: "away").sum(:h)
       print "  "
       puts "?"
 
@@ -108,10 +109,51 @@ class Game < ApplicationRecord
       end
       print home_score
       print "  "
-      print "?"
+      print game_lineup_slots.where(team: "home").sum(:h)
       print "  "
       puts "?"
     end
+  end
+
+  def print_box_score
+    %i(away home).each do |team|
+      puts team == :away ? "#{away_team.city} #{away_team.name}" : "#{home_team.city} #{home_team.name}"
+      
+      print "Hitters"
+      name_offset = 12
+      print " " * name_offset
+      puts "AB  R  H  RBI  BB  SO"
+      self.game_lineup_slots.where(team: team).order(:slot).each do |lineup_slot|
+        print lineup_slot.player.last_name
+        print " " * (name_offset + ("Hitters".length - lineup_slot.player.last_name.length)) + " "
+        puts "#{lineup_slot.ab}  #{lineup_slot.r}  #{lineup_slot.h}    #{lineup_slot.rbi}   #{lineup_slot.bb}   #{lineup_slot.so}"
+      end
+      puts "----------------------------------------"
+      puts "BATTING"
+      puts "2B: #{extra_base_hits[team][:doubles].map { |h| (Player.find(h.keys.first).last_name + " " + h.values.first.to_s.gsub("1","")).strip }.join(", ")}" if extra_base_hits[team][:doubles].present?
+      puts "3B: #{extra_base_hits[team][:triples].map { |h| (Player.find(h.keys.first).last_name + " " + h.values.first.to_s.gsub("1", "")).strip }.join(", ")}" if extra_base_hits[team][:triples].present?
+      puts "HR: #{extra_base_hits[team][:hr].map { |h| (Player.find(h.keys.first).last_name + " " + h.values.first.to_s.gsub("1","")).strip }.join(", ")}" if extra_base_hits[team][:hr].present?
+      puts "----------------------------------------"
+    end
+  end
+
+  def extra_base_hits
+    @extra_base_hits ||= extra_base_hits_summary
+  end
+
+  def extra_base_hits_summary
+    result = {
+      away: { doubles: [], triples: [], hr: [] },
+      home: { doubles: [], triples: [], hr: [] }
+    }
+
+      game_lineup_slots.each do |slot|
+        (result[slot.team.to_sym][:doubles] << { slot.player_id => slot.doubles }) if slot.doubles > 0
+        (result[slot.team.to_sym][:triples] << { slot.player_id => slot.triples }) if slot.triples > 0
+        (result[slot.team.to_sym][:hr] << { slot.player_id => slot.hr }) if slot.hr > 0
+      end
+
+    result
   end
 
   def lineups
@@ -180,7 +222,10 @@ class Game < ApplicationRecord
   def end_game
     close_out_final_inning
     update(status: :final)
+    puts "==========================="
     print_line_score
+    puts "==========================="
+    print_box_score
   end
 
   def tie_score
