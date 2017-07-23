@@ -319,16 +319,20 @@ RSpec.describe Inning do
     end
 
     context "if a runner is on third" do
+      let(:bill) { double }
+      let(:frank) { double }
+
       before do
-        subject.man_on_third = "Bill"
-        subject.man_on_second = "Frank"
+        allow(bill).to receive(:increment!).with(:r).and_return(true)
+        subject.man_on_third = bill
+        subject.man_on_second = frank
       end
 
       it "scores the man on third" do
         subject.runner_from_third_scores
         expect(subject.runs).to eq(1)
         expect(subject.man_on_first).to be_nil
-        expect(subject.man_on_second).to eq("Frank")
+        expect(subject.man_on_second).to eq(frank)
         expect(subject.man_on_third).to be_nil
       end
     end
@@ -356,18 +360,23 @@ RSpec.describe Inning do
     end
 
     context "There are baserunners" do
+      let(:pete) { double }
+      let(:babe) { double }
+      let(:joe) { double }
+
       before do
-        subject.man_on_third = "Pete"
-        subject.man_on_second = "Babe"
-        subject.man_on_first = "Joe"
+        allow(pete).to receive(:increment!).with(:r).and_return(true)
+        subject.man_on_third = pete
+        subject.man_on_second = babe
+        subject.man_on_first = joe
       end
 
       it "moves all runners up one base" do
         subject.runners_advance_one_base
         expect(subject.runs).to eq(1)
         expect(subject.man_on_first).to be_nil
-        expect(subject.man_on_second).to eq("Joe")
-        expect(subject.man_on_third).to eq("Babe")
+        expect(subject.man_on_second).to eq(joe)
+        expect(subject.man_on_third).to eq(babe)
       end
     end
   end
@@ -467,18 +476,24 @@ RSpec.describe Inning do
     end
 
     context "There are baserunners" do
+      let(:pete) { double }
+      let(:babe) { double }
+      let(:joe) { double }
+
       before do
-        subject.man_on_third = "Pete"
-        subject.man_on_second = "Babe"
-        subject.man_on_first = "Joe"
+        allow(pete).to receive(:increment!).with(:r).and_return(true)
+        allow(babe).to receive(:increment!).with(:r).and_return(true)
+        subject.man_on_third = pete
+        subject.man_on_second = babe
+        subject.man_on_first = joe
       end
 
-      it "moves all runners up one base" do
+      it "moves all runners up two bases" do
         subject.runners_advance_two_bases
         expect(subject.runs).to eq(2)
         expect(subject.man_on_first).to be_nil
         expect(subject.man_on_second).to be_nil
-        expect(subject.man_on_third).to eq("Joe")
+        expect(subject.man_on_third).to eq(joe)
       end
     end
   end
@@ -506,10 +521,17 @@ RSpec.describe Inning do
     end
 
     context "There are baserunners" do
+      let(:pete) { double }
+      let(:babe) { double }
+      let(:joe) { double }
+
       before do
-        subject.man_on_third = "Pete"
-        subject.man_on_second = "Babe"
-        subject.man_on_first = "Joe"
+        allow(pete).to receive(:increment!).with(:r).and_return(true)
+        allow(babe).to receive(:increment!).with(:r).and_return(true)
+        allow(joe).to receive(:increment!).with(:r).and_return(true)
+        subject.man_on_third = pete
+        subject.man_on_second = babe
+        subject.man_on_first = joe
       end
 
       it "scores the runners and empties the bases" do
@@ -545,10 +567,17 @@ RSpec.describe Inning do
     end
 
     context "There are baserunners" do
+      let(:pete) { double }
+      let(:babe) { double }
+      let(:joe) { double }
+
       before do
-        subject.man_on_third = "Pete"
-        subject.man_on_second = "Babe"
-        subject.man_on_first = "Joe"
+        allow(pete).to receive(:increment!).with(:r).and_return(true)
+        allow(babe).to receive(:increment!).with(:r).and_return(true)
+        allow(joe).to receive(:increment!).with(:r).and_return(true)
+        subject.man_on_third = pete
+        subject.man_on_second = babe
+        subject.man_on_first = joe
       end
 
       it "scores the runners and empties the bases" do

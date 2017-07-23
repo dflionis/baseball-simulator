@@ -19,6 +19,7 @@ RSpec.describe Game do
   it { should belong_to(:home_team) }
 
   it { should have_many(:innings) }
+  it { should have_many(:game_lineup_slots) }
 
   it { should define_enum_for(:status).with([:scheduled, :in_progress, :final]) }
 
@@ -107,8 +108,8 @@ RSpec.describe Game do
 
     context "9 Inning Game" do
       let(:line1) { "Team  1  2  3  4  5  6  7  8  9  R  H  E"}
-      let(:line2) { "NYM   0  0  0  0  0  0  0  0  0  0  ?  ?"}
-      let(:line3) { "BOS   0  0  0  0  0  0  0  1  X  1  ?  ?"}
+      let(:line2) { "NYM   0  0  0  0  0  0  0  0  0  0  0  ?"}
+      let(:line3) { "BOS   0  0  0  0  0  0  0  1  X  1  0  ?"}
       let(:expected_output) { line1 + "\n" + line2 + "\n" + line3 + "\n" }
 
       before do

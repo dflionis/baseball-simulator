@@ -3,6 +3,7 @@ class Player < ApplicationRecord
 
   has_many :player_positions
   has_many :positions, through: :player_positions
+  has_many :game_lineup_slots
 
   before_save :valid_outcomes_json?
 

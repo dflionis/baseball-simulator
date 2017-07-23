@@ -9,6 +9,7 @@ RSpec.describe Player do
 
   it { should have_many(:player_positions) }
   it { should have_many(:positions).through(:player_positions) }
+  it { should have_many(:game_lineup_slots) }
 
   it { should validate_presence_of(:team) }
   it { should validate_presence_of(:first_name) }

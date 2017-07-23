@@ -1,11 +1,11 @@
 class PlateAppearance < ApplicationRecord
   belongs_to :inning
   belongs_to :pitcher
-  belongs_to :batter, class_name: "Player"
+  belongs_to :batter, class_name: "GameLineupSlot"
   belongs_to :outcome
-  belongs_to :runner_on_first, class_name: "Player"
-  belongs_to :runner_on_second, class_name: "Player"
-  belongs_to :runner_on_third, class_name: "Player"
+  belongs_to :runner_on_first, class_name: "GameLineupSlot"
+  belongs_to :runner_on_second, class_name: "GameLineupSlot"
+  belongs_to :runner_on_third, class_name: "GameLineupSlot"
 
   validates :inning, presence: true
   validates :pitcher, presence: true
@@ -16,8 +16,16 @@ class PlateAppearance < ApplicationRecord
   private
 
   def play_out_at_bat
+    runs_before_ab = inning.runs
     determine_outcome
     code = outcome.code
+    batter.increment!(:ab) if outcome.ab
+    batter.increment!(:h) if outcome.h
+    batter.increment!(:doubles) if outcome.double
+    batter.increment!(:triples) if outcome.triple
+    batter.increment!(:hr) if outcome.hr
+    batter.increment!(:bb) if outcome.bb
+    batter.increment!(:so) if outcome.so
     code.slice!(" with injury") # Implement injuries later
     code.slice!(" plus injury") # Implement injuries later
 
@@ -29,6 +37,7 @@ class PlateAppearance < ApplicationRecord
       inning.man_on_first = batter
     elsif home_run?(code)
       inning.everyone_scores_including_batter
+      batter.increment!(:r)
     elsif single_with_two_asterisk?(code)
       inning.runners_advance_two_bases
       inning.man_on_first = batter
@@ -42,7 +51,7 @@ class PlateAppearance < ApplicationRecord
       if !inning.at_least_one_runner_forced? || inning.two_outs?
         inning.add_one_out
       else
-        inning.add_two_outs 
+        inning.add_two_outs
         inning.man_on_first = nil
         inning.runners_advance_one_base unless inning.three_outs?
       end
@@ -62,7 +71,7 @@ class PlateAppearance < ApplicationRecord
       if !inning.at_least_one_runner_forced? || inning.two_outs?
         inning.add_one_out
       else
-        inning.add_two_outs 
+        inning.add_two_outs
         inning.man_on_first = nil
         inning.runners_advance_one_base unless inning.three_outs?
       end
@@ -83,6 +92,9 @@ class PlateAppearance < ApplicationRecord
     end
 
     inning.save!
+    runs_after_ab = inning.runs
+    # FIXME: Are there cases where the hitter shouldn't get credit for runs scored during his AB?
+    batter.increment!(:rbi, by = (runs_after_ab - runs_before_ab)) if runs_before_ab != runs_after_ab
   end
 
   def determine_outcome
@@ -107,14 +119,14 @@ class PlateAppearance < ApplicationRecord
   end
 
   def merge_possible_outcomes
-    if pitcher.throws == "R" && batter.batting_hand == "R"
-      batter.vs_rhp.merge(pitcher.vs_rhb)   
-    elsif pitcher.throws == "R" && (batter.batting_hand == "L" || batter.batting_hand == "S")
-      batter.vs_rhp.merge(pitcher.vs_lhb)   
-    elsif pitcher.throws == "L" && batter.batting_hand == "L"
-      batter.vs_lhp.merge(pitcher.vs_lhb)   
-    elsif pitcher.throws == "L" && (batter.batting_hand == "R" || batter.batting_hand == "S")
-      batter.vs_lhp.merge(pitcher.vs_rhb)
+    if pitcher.throws == "R" && batter.player.batting_hand == "R"
+      batter.player.vs_rhp.merge(pitcher.vs_rhb)
+    elsif pitcher.throws == "R" && (batter.player.batting_hand == "L" || batter.player.batting_hand == "S")
+      batter.player.vs_rhp.merge(pitcher.vs_lhb)
+    elsif pitcher.throws == "L" && batter.player.batting_hand == "L"
+      batter.player.vs_lhp.merge(pitcher.vs_lhb)
+    elsif pitcher.throws == "L" && (batter.player.batting_hand == "R" || batter.player.batting_hand == "S")
+      batter.player.vs_lhp.merge(pitcher.vs_rhb)
     else
       raise "unreachable condition"
     end

@@ -11,6 +11,7 @@ Inspired by the Strat-O-Matic Baseball board game, Culture Brain's NES cult clas
 
 This is a long term project (think Perl 6) that aims to implement the aforementioned functionality a little at a time.
 
+![Alt text](/app/assets/images/sample_boxscore.png?raw=true)
 
 ## Environment Setup
 
