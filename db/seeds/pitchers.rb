@@ -1,6 +1,8 @@
 puts "Creating Pitchers..."
 red_sox = Team.find_by(name: "Red Sox")
 yankees = Team.find_by(name: "Yankees")
+orioles = Team.find_by(name: "Orioles")
+blue_jays = Team.find_by(name: "Blue Jays")
 
 Pitcher.create!(
   team: red_sox,
@@ -263,6 +265,274 @@ Pitcher.create!(
       "10" => "GB (ss) X",
       "11" => "GB (p) X",
       "12" => "WALK"
+    }
+  }
+)
+
+Pitcher.create!(
+  team: orioles,
+  first_name: "Wee-Yin",
+  last_name: "Chen",
+  pitcher_type: "SP",
+  throws: "L",
+  batting_rating: "1",
+  wins: 11,
+  losses: 8,
+  era: 3.34,
+  starts: 31,
+  saves: 0,
+  innings_pitched: 191,
+  hits_allowed: 192,
+  bb: 41,
+  so: 153,
+  hr_allowed: 28, 
+  vs_lhb: {
+    "4" => {
+      "2" => "gb (1b) B",
+      "3" => "FLY (rf) X",
+      "4" => "GB (ss) X",
+      "5" => "GB (ss) X",
+      "6" => "strikeout",
+      "7" => "strikeout",
+      "8" => "gb (1b) ",
+      "9" => {
+        "1" => "SI*",
+        "2-20" => "lo (2b)"
+      },
+      "10" => "strikeout",
+      "11" => "gb (ss) B",
+      "12" => "gb (2b) B"
+    },
+    "5" => {
+      "2" => {
+        "1" => "SI*",
+        "2-20" => "lo (2b)"
+      },
+      "3" => "GB (p) X",
+      "4" => "GB (3b) X",
+      "5" => "popout (ss)",
+      "6" => "fly (cf) B",
+      "7" => {
+        "1-3" => "DO**",
+        "4-20" => "SI**"
+      },
+      "8" => "fly (rf) B",
+      "9" => "popout (1b)",
+      "10" => "fly (rf) C",
+      "11" => "gb (2b) A",
+      "12" => "GB (1b) X"
+    },
+    "6" => {
+      "2" => "fly (cf) B",
+      "3" => "FLY (lf) X",
+      "4" => "CATCH-X",
+      "5" => "fly (lf) B",
+      "6" => "gb (2b) A",
+      "7" => "GB (2b) X",
+      "8" => {
+        "1-3" => "TR",
+        "4-20" => "SI**"
+      },
+      "9" => {
+        "1-6" => "N-HR",
+        "7-20" => "DO"
+      },
+      "10" => "FLY (cf) X",
+      "11" => "SINGLE (cf)",
+      "12" => "GB (1b) X"
+    }
+  }, 
+  vs_rhb: {
+    "4" => {
+      "2" => "fly (cf) B",
+      "3" => "FLY (rf) X",
+      "4" => "GB (ss) X",
+      "5" => "GB (ss) X",
+      "6" => "strikeout",
+      "7" => {
+        "1-2" => "SI*",
+        "3-20" => "lo (2b)"
+      },
+      "8" => "fly (rf) B",
+      "9" => "SINGLE (cf)",
+      "10" => "gb (ss) A",
+      "11" => "SINGLE (rf)",
+      "12" => "fly (lf) B"
+    },
+    "5" => {
+      "2" => "SINGLE (cf)",
+      "3" => "GB (p) X",
+      "4" => "GB (3b) X",
+      "5" => "strikeout",
+      "6" => "gb (3b) A",
+      "7" => {
+        "1-17" => "DO**",
+        "18-20" => "SI**"
+      },
+      "8" => "strikeout",
+      "9" => "strikeout",
+      "10" => "fly (cf) C",
+      "11" => "fly (lf) B",
+      "12" => "GB (1b) X"
+    },
+    "6" => {
+      "2" => {
+        "1-10" => "N-HR",
+        "11-20" => "fly (lf) B"
+      },
+      "3" => "FLY (lf) X",
+      "4" => "CATCH-X",
+      "5" => "WALK",
+      "6" => "strikeout",
+      "7" => "GB (2b) X",
+      "8" => {
+        "1-2" => "TR",
+        "3-20" => "DO"
+      },
+      "9" => {
+        "1-16" => "N-HR",
+        "17-20" => "DO"
+      },
+      "10" => "FLY (cf) X",
+      "11" => "N-HR",
+      "12" => "GB (1b) X"
+    }
+  } 
+)
+
+Pitcher.create!(
+  team: blue_jays,
+  first_name: "R.A.",
+  last_name: "Dickey",
+  pitcher_type: "SP",
+  throws: "R",
+  batting_rating: "1",
+  wins: 11,
+  losses: 11,
+  era: 3.91,
+  starts: 33,
+  saves: 0,
+  innings_pitched: 214,
+  hits_allowed: 195,
+  bb: 61,
+  so: 126,
+  hr_allowed: 25, 
+  vs_lhb: {
+    "4" => {
+      "2" => "gb (1b) X",
+      "3" => "FLY (rf) X",
+      "4" => "GB (3b) X",
+      "5" => "fly (lf) B",
+      "6" => {
+        "1-8" => "SI*",
+        "9-20" => "lo (2b)"
+      },
+      "7" => "popout (1b)",
+      "8" => {
+        "1-4" => "TR",
+        "5-20" => "SI**"
+      },
+      "9" => "popout (2b)",
+      "10" => "fly (cf) C",
+      "11" => "gb (1b) B",
+      "12" => "GB (1b) X"
+    },
+    "5" => {
+      "2" => "GB (2b) X",
+      "3" => {
+        "1-12" => "N-HR",
+        "13-20" => "fly (rf) B"
+      },
+      "4" => "WALK",
+      "5" => {
+        "1-7" => "N-HR",
+        "8-20" => "DO"
+      },
+      "6" => "gb (1b) B",
+      "7" => "fly (cf) B",
+      "8" => "GB (2b) X",
+      "9" => "strikeout",
+      "10" => "CATCH-X",
+      "11" => "FLY (lf) X",
+      "12" => "fly (cf) C"
+    },
+    "6" => {
+      "2" => "gb (ss) B",
+      "3" => "SINGLE (rf)",
+      "4" => "FLY (cf) X",
+      "5" => "gb (2b) A",
+      "6" => "gb (2b) A",
+      "7" => {
+        "1-6" => "DO",
+        "7-20" => "fly (cf) B"
+      },
+      "8" => "WALK",
+      "9" => "GB (ss) X",
+      "10" => "GB (ss) X",
+      "11" => "GB (p) X",
+      "12" => {
+        "1-8" => "SI*",
+        "9-20" => "lo (2b)"
+      }
+    }
+  },
+  vs_rhb: {
+    "4" => {
+      "2" => "GB (1b) X",
+      "3" => "FLY (rf) X",
+      "4" => "GB (3b) X",
+      "5" => "fly (lf) B",
+      "6" => "SINGLE (lf)",
+      "7" => "strikeout",
+      "8" => {
+        "1-2" => "TR",
+        "3-20" => "SI**"
+      },
+      "9" => "fly (cf) B",
+      "10" => "fly (rf) B",
+      "11" => "fly (cf) B",
+      "12" => "GB (1b) X"
+    },
+    "5" => {
+      "2" => "GB (2b) X",
+      "3" => {
+        "1-11" => "N-HR",
+        "12-20" => "fly (lf) B"
+      },
+      "4" => "fly (lf) C",
+      "5" => {
+        "1-12" => "N-HR",
+        "13-20" => "TR"
+      },
+      "6" => "gb (ss) A",
+      "7" => "WALK",
+      "8" => "GB (2b) X",
+      "9" => "strikeout",
+      "10" => "CATCH-X",
+      "11" => "FLY (lf) X",
+      "12" => "WALK"
+    },
+    "6" => {
+      "2" => {
+        "1-7" => "SI*",
+        "8-20" => "lo (ss)"
+      },
+      "3" => "SINGLE (rf)",
+      "4" => "FLY (cf) X",
+      "5" => "gb (3b) A",
+      "6" => "strikeout",
+      "7" => {
+        "1-14" => "DO**",
+        "15-20" => "SI**"
+      },
+      "8" => {
+        "1" => "SI*",
+        "2-20" => "lo (3b)"
+      },
+      "9" => "GB (ss) X",
+      "10" => "GB (ss) X",
+      "11" => "GB (p) X",
+      "12" => "fly (lf) C"
     }
   }
 )

@@ -161,3 +161,155 @@ DefaultLineupSlot.create!(
   position: right_field,
   slot: 9
 )
+
+puts "Creating Orioles Default Lineup..."
+orioles = Team.find_by(name: "Orioles")
+
+machado = Player.find_by(last_name: "Machado")
+parra = Player.find_by(last_name: "Parra")
+jones = Player.find_by(last_name: "Jones")
+davis = Player.find_by(last_name: "Davis")
+pearce = Player.find_by(last_name: "Pearce")
+schoop = Player.find_by(last_name: "Schoop")
+paredes = Player.find_by(last_name: "Paredes")
+hardy = Player.find_by(last_name: "Hardy")
+joseph = Player.find_by(last_name: "Joseph")
+
+DefaultLineupSlot.create!(
+  team: orioles,
+  player: machado,
+  position: third_base,
+  slot: 1
+)
+
+DefaultLineupSlot.create!(
+  team: orioles,
+  player: parra,
+  position: right_field,
+  slot: 2
+)
+
+DefaultLineupSlot.create!(
+  team: orioles,
+  player: jones,
+  position: center_field,
+  slot: 3
+)
+
+DefaultLineupSlot.create!(
+  team: orioles,
+  player: davis,
+  position: first_base,
+  slot: 4
+)
+
+DefaultLineupSlot.create!(
+  team: orioles,
+  player: pearce,
+  position: left_field,
+  slot: 5
+)
+
+DefaultLineupSlot.create!(
+  team: orioles,
+  player: schoop,
+  position: second_base,
+  slot: 6
+)
+
+DefaultLineupSlot.create!(
+  team: orioles,
+  player: paredes,
+  position: designated_hitter,
+  slot: 7
+)
+
+DefaultLineupSlot.create!(
+  team: orioles,
+  player: hardy,
+  position: shortstop,
+  slot: 8
+)
+
+DefaultLineupSlot.create!(
+  team: orioles,
+  player: joseph,
+  position: catcher,
+  slot: 9
+)
+
+puts "Creating Blue Jays Default Lineup..."
+blue_jays = Team.find_by(name: "Blue Jays")
+
+revere = Player.find_by(last_name: "Revere")
+donaldson = Player.find_by(last_name: "Donaldson")
+bautista = Player.find_by(last_name: "Bautista")
+encarnacion = Player.find_by(last_name: "Encarnacion")
+tulowitzki = Player.find_by(last_name: "Tulowitzki")
+smoak = Player.find_by(last_name: "Smoak")
+martin = Player.find_by(last_name: "Martin")
+pillar = Player.find_by(last_name: "Pillar")
+goins = Player.find_by(last_name: "Goins")
+
+DefaultLineupSlot.create!(
+  team: blue_jays,
+  player: revere,
+  position: left_field,
+  slot: 1
+)
+
+DefaultLineupSlot.create!(
+  team: blue_jays,
+  player: donaldson,
+  position: third_base,
+  slot: 2
+)
+
+DefaultLineupSlot.create!(
+  team: blue_jays,
+  player: bautista,
+  position: right_field,
+  slot: 3
+)
+
+DefaultLineupSlot.create!(
+  team: blue_jays,
+  player: encarnacion,
+  position: designated_hitter,
+  slot: 4
+)
+
+DefaultLineupSlot.create!(
+  team: blue_jays,
+  player: tulowitzki,
+  position: shortstop,
+  slot: 5
+)
+
+DefaultLineupSlot.create!(
+  team: blue_jays,
+  player: smoak,
+  position: first_base,
+  slot: 6
+)
+
+DefaultLineupSlot.create!(
+  team: blue_jays,
+  player: martin,
+  position: catcher,
+  slot: 7
+)
+
+DefaultLineupSlot.create!(
+  team: blue_jays,
+  player: pillar,
+  position: center_field,
+  slot: 8
+)
+
+DefaultLineupSlot.create!(
+  team: blue_jays,
+  player: goins,
+  position: second_base,
+  slot: 9
+)
