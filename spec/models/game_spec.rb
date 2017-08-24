@@ -3,12 +3,14 @@ require "rails_helper"
 RSpec.describe Game do
   include ActiveSupport::Testing::TimeHelpers
 
-  let(:red_sox) { create(:red_sox) }
-  let(:mets) { create(:mets) }
+  let(:league)  { create(:american_league) }
+  let(:al_east) { create(:al_east, league: league) }
+  let(:red_sox) { create(:red_sox, division: al_east) }
+  let(:yankees) { create(:yankees, division: al_east) }
 
   subject do
     Game.new(
-      away_team: mets,
+      away_team: yankees,
       home_team: red_sox,
       status: :scheduled,
       start_time: Time.now
@@ -50,7 +52,7 @@ RSpec.describe Game do
   context "game is final" do
     subject do
       Game.new(
-        away_team: mets,
+        away_team: yankees,
         home_team: red_sox,
         status: :final,
         start_time: Time.now - 1.day,
@@ -108,7 +110,7 @@ RSpec.describe Game do
 
     context "9 Inning Game" do
       let(:line1) { "Team  1  2  3  4  5  6  7  8  9  R  H  E"}
-      let(:line2) { "NYM   0  0  0  0  0  0  0  0  0  0  0  ?"}
+      let(:line2) { "NYY   0  0  0  0  0  0  0  0  0  0  0  ?"}
       let(:line3) { "BOS   0  0  0  0  0  0  0  1  X  1  0  ?"}
       let(:expected_output) { line1 + "\n" + line2 + "\n" + line3 + "\n" }
 
@@ -143,7 +145,7 @@ RSpec.describe Game do
     context "when the game is already final" do
       subject do
         Game.new(
-          away_team: mets,
+          away_team: yankees,
           home_team: red_sox,
           status: :final,
           start_time: Time.now
@@ -158,7 +160,7 @@ RSpec.describe Game do
     context "if the game is tied" do
       subject do
         Game.new(
-          away_team: mets,
+          away_team: yankees,
           home_team: red_sox,
           status: :in_progress,
           start_time: Time.now,
@@ -183,7 +185,7 @@ RSpec.describe Game do
 
       subject do
         Game.new(
-          away_team: mets,
+          away_team: yankees,
           home_team: red_sox,
           status: :in_progress,
           start_time: Time.now,
@@ -209,7 +211,7 @@ RSpec.describe Game do
 
       subject do
         Game.new(
-          away_team: mets,
+          away_team: yankees,
           home_team: red_sox,
           status: :in_progress,
           start_time: Time.now,
@@ -236,7 +238,7 @@ RSpec.describe Game do
 
       subject do
         Game.new(
-          away_team: mets,
+          away_team: yankees,
           home_team: red_sox,
           status: :in_progress,
           start_time: Time.now,
@@ -262,7 +264,7 @@ RSpec.describe Game do
 
       subject do
         Game.new(
-          away_team: mets,
+          away_team: yankees,
           home_team: red_sox,
           status: :in_progress,
           start_time: Time.now,
@@ -287,7 +289,7 @@ RSpec.describe Game do
 
       subject do
         Game.new(
-          away_team: mets,
+          away_team: yankees,
           home_team: red_sox,
           status: :in_progress,
           start_time: Time.now,
@@ -302,15 +304,15 @@ RSpec.describe Game do
   end
 
   describe "#away_pitcher" do
-    let!(:sabathia) { FactoryGirl.create(:cc_sabathia, team: FactoryGirl.create(:dodgers)) }
+    let!(:sabathia) { FactoryGirl.create(:cc_sabathia, team: yankees) }
 
-    it "selects Rick Porcello as the home pitcher" do
+    it "selects C.C. Sabathia as the away pitcher" do
       expect(subject.away_pitcher).to eq(sabathia)
     end
   end
 
   describe "#home_pitcher" do
-    let!(:porcello) { FactoryGirl.create(:rick_porcello, team: FactoryGirl.create(:dodgers)) }
+    let!(:porcello) { FactoryGirl.create(:rick_porcello, team: red_sox) }
 
     it "selects Rick Porcello as the home pitcher" do
       expect(subject.home_pitcher).to eq(porcello)

@@ -294,7 +294,7 @@ Pitcher.create!(
       "5" => "GB (ss) X",
       "6" => "strikeout",
       "7" => "strikeout",
-      "8" => "gb (1b) ",
+      "8" => "gb (1b) B",
       "9" => {
         "1" => "SI*",
         "2-20" => "lo (2b)"

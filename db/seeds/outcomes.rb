@@ -29,6 +29,7 @@ outcomes = [
   "SINGLE (lf)",
   "SINGLE (rf)",
   "TR",
+  "TRIPLE",
   "WALK",
   "fly (cf) A",
   "fly (cf) A plus injury",
@@ -47,8 +48,10 @@ outcomes = [
   "foulout (C)",
   "foulout (c)",
   "gb (1b) A",
+  "gb (1b) A+",
   "gb (1b) B",
   "gb (1b) C",
+  "gb (1b) C plus injury",
   "gb (1b) X",
   "gb (1b) c",
   "gb (2b) A",
@@ -98,7 +101,7 @@ outcomes.each do |outcome|
     Outcome.create!(code: outcome, so: true)
   elsif ["DO", "DO**", "DOUBLE (cf)", "DOUBLE (lf)", "DOUBLE (rf)"].include?(outcome)
     Outcome.create!(code: outcome, h: true, double: true)
-  elsif ["TR"].include?(outcome)
+  elsif ["TR", "TRIPLE"].include?(outcome)
     Outcome.create!(code: outcome, h: true, triple: true)
   elsif ["HOMERUN", "N-HR", "HR"].include?(outcome)
     Outcome.create!(code: outcome, h: true, hr: true)

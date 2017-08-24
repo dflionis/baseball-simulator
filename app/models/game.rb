@@ -185,11 +185,11 @@ class Game < ApplicationRecord
   end
 
   def away_pitcher
-    @away_pitcher ||= Pitcher.find_by(last_name: "Sabathia")
+    @away_pitcher ||= away_team.pitchers.first
   end
 
   def home_pitcher
-    @home_pitcher ||= Pitcher.find_by(last_name: "Porcello")
+    @home_pitcher ||= home_team.pitchers.first
   end
 
   private
