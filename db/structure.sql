@@ -273,7 +273,8 @@ CREATE TABLE games (
     status integer NOT NULL,
     away_score integer DEFAULT 0,
     home_score integer DEFAULT 0,
-    current_inning integer
+    current_inning integer,
+    season_id integer
 );
 
 
@@ -624,6 +625,38 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: seasons; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE seasons (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    status integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: seasons_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE seasons_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: seasons_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE seasons_id_seq OWNED BY seasons.id;
+
+
+--
 -- Name: teams; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -746,6 +779,13 @@ ALTER TABLE ONLY positions ALTER COLUMN id SET DEFAULT nextval('positions_id_seq
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY seasons ALTER COLUMN id SET DEFAULT nextval('seasons_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY teams ALTER COLUMN id SET DEFAULT nextval('teams_id_seq'::regclass);
 
 
@@ -854,6 +894,14 @@ ALTER TABLE ONLY positions
 
 
 --
+-- Name: seasons_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY seasons
+    ADD CONSTRAINT seasons_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: teams_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -908,6 +956,13 @@ CREATE UNIQUE INDEX index_game_lineup_slots_on_game_id_and_team_and_position_id 
 --
 
 CREATE UNIQUE INDEX index_game_lineup_slots_on_game_id_and_team_and_slot ON game_lineup_slots USING btree (game_id, team, slot);
+
+
+--
+-- Name: index_games_on_season_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_games_on_season_id ON games USING btree (season_id);
 
 
 --
@@ -979,6 +1034,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170101234806'),
 ('20170103025525'),
 ('20170601012133'),
-('20170601013937');
+('20170601013937'),
+('20170826013228'),
+('20170826054118');
 
 

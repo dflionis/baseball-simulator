@@ -229,7 +229,7 @@ Player.create!(
         "12-20" => "SI**"
       },
       "7" => "strikeout",
-      "8" => "fly (lf) b",
+      "8" => "fly (lf) B",
       "9" => "gb (ss) A",
       "10" => "gb (ss) A",
       "11" => "SINGLE (lf)",
