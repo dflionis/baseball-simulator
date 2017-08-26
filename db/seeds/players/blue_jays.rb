@@ -702,7 +702,7 @@ Player.create!(
       "3" => "fly (lf) B?",
       "4" => "WALK",
       "5" => "DOUBLE (cf)",
-      "6" => "DOULE (lf)",
+      "6" => "DOUBLE (lf)",
       "7" => "fly (cf) B?",
       "8" => "HOMERUN",
       "9" => {
@@ -866,7 +866,7 @@ Player.create!(
       "12" => "lo (3b) max plus injury"
     },
     "3" => {
-      "2" => "lo (1b) C",
+      "2" => "gb (1b) C",
       "3" => "gb (p) A",
       "4" => "gb (2b) C",
       "5" => "strikeout",

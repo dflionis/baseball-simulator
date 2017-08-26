@@ -67,7 +67,7 @@ Player.create!(
       "3" => "HBP plus injury",
       "4" => "gb (p) A",
       "5" => "strikeout",
-      "6" => "popout (ss) A",
+      "6" => "popout (ss)",
       "7" => "gb (ss) A",
       "8" => "strikeout",
       "9" => "strikeout",
@@ -225,8 +225,8 @@ Player.create!(
       "3" => "gb (p) A",
       "4" => "strikeout",
       "5" => "SINGLE (lf)",
-      "6" => "SINGLE **",
-      "7" => "SINGLE **",
+      "6" => "SINGLE**",
+      "7" => "SINGLE**",
       "8" => "strikeout",
       "9" => "strikeout",
       "10" => {
@@ -1079,7 +1079,7 @@ Player.create!(
         "1-8" => "SI*",
         "9-20" => "lo (ss)"
       },
-      "3" => "db (3b) A",
+      "3" => "gb (3b) A",
       "4" => "foulout (3b)",
       "5" => "SINGLE (lf)",
       "6" => "popout (ss)",
