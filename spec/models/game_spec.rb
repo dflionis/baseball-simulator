@@ -346,7 +346,7 @@ RSpec.describe Game do
     end
 
     it "returns a hash with both away and home lineups" do
-      subject.save!
+      subject.load_lineups
       expect(subject.lineups).to eq(expected_lineup_hash)
     end
   end

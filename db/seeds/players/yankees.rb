@@ -415,7 +415,7 @@ Player.create!(
   obp: 0.320,
   vs_lhp: {
     "1" => {
-      "2" => "gb (1b) c",
+      "2" => "gb (1b) C",
       "3" => "WALK",
       "4" => "fly (lf) B?",
       "5" => "strikeout",

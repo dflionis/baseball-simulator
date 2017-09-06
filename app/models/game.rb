@@ -1,6 +1,7 @@
 class Game < ApplicationRecord
   belongs_to :away_team, class_name: "Team"
   belongs_to :home_team, class_name: "Team"
+  belongs_to :season
 
   has_many :innings, dependent: :destroy
   has_many :game_lineup_slots, dependent: :destroy
@@ -21,10 +22,10 @@ class Game < ApplicationRecord
 
   after_initialize :set_default_values
   before_save :sync_current_inning_with_status, :prevent_mirror_matches
-  after_create :load_lineups
 
   def play!
     save! unless persisted?
+    load_lineups
     while !final? do
       next_half_inning.play!
     end
@@ -192,6 +193,14 @@ class Game < ApplicationRecord
     @home_pitcher ||= home_team.pitchers.first
   end
 
+  def load_lineups
+    @loaded_lineups ||=
+      {
+        away_lineup: away_team.load_default_lineup(game: self, home: false),
+        home_lineup: home_team.load_default_lineup(game: self, home: true)
+      }
+  end
+
   private
 
   def set_default_values
@@ -254,13 +263,5 @@ class Game < ApplicationRecord
 
   def even_number_of_half_innings_started
     innings.count % 2 == 0
-  end
-
-  def load_lineups
-    @loaded_lineups ||=
-      {
-        away_lineup: away_team.load_default_lineup(game: self, home: false),
-        home_lineup: home_team.load_default_lineup(game: self, home: true)
-      }
   end
 end
